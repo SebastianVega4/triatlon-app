@@ -1,1 +1,107 @@
-<p>gestion-tiempos works!</p>
+<div class="container mt-4">
+  <h2>Gestión de Tiempos</h2>
+  
+  <div class="row" *ngIf="!loading; else loadingTemplate">
+    <div class="col-md-4">
+      <div class="list-group">
+        <button 
+          *ngFor="let equipo of equipos" 
+          class="list-group-item list-group-item-action"
+          [class.active]="equipoSeleccionado?.id === equipo.id"
+          (click)="seleccionarEquipo(equipo.id)"
+        >
+          {{ equipo.nombre }}
+          <span class="badge bg-primary rounded-pill float-end">
+            {{ equipo.tiempo_total || '--:--:--' }}
+          </span>
+        </button>
+      </div>
+    </div>
+    
+    <div class="col-md-8" *ngIf="equipoSeleccionado">
+      <div class="card">
+        <div class="card-header">
+          <h3>{{ equipoSeleccionado.nombre }}</h3>
+          <p class="mb-0">Tiempo total: {{ equipoSeleccionado.tiempo_total || '--:--:--' }}</p>
+        </div>
+        
+        <div class="card-body">
+          <h4>Participantes</h4>
+          
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Género</th>
+                  <th>Disciplina</th>
+                  <th>Tiempo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let participante of participantes">
+                  <td>{{ participante.nombre }}</td>
+                  <td>{{ participante.genero === 'M' ? 'Masculino' : 'Femenino' }}</td>
+                  <td>{{ participante.disciplina | titlecase }}</td>
+                  <td>
+                    <span *ngIf="!tiempoEditando[participante.id]">
+                      {{ participante.tiempo || '--:--:--' }}
+                      <button 
+                        class="btn btn-sm btn-outline-primary ms-2"
+                        (click)="editarTiempo(participante.id)"
+                      >
+                        Editar
+                      </button>
+                    </span>
+                    
+                    <div *ngIf="tiempoEditando[participante.id]" class="input-group">
+                      <input 
+                        type="text" 
+                        class="form-control" 
+                        #tiempoInput
+                        [value]="participante.tiempo || '00:00:00'"
+                        placeholder="HH:MM:SS"
+                      >
+                      <button 
+                        class="btn btn-success"
+                        (click)="guardarTiempo(participante, tiempoInput.value)"
+                      >
+                        Guardar
+                      </button>
+                      <button 
+                        class="btn btn-outline-secondary"
+                        (click)="tiempoEditando[participante.id] = false"
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </td>
+                  <td>
+                    <button 
+                      class="btn btn-sm btn-warning me-2"
+                      (click)="aplicarPenalizacion(participante)"
+                      [disabled]="!participante.disciplina"
+                    >
+                      Penalizar
+                    </button>
+                    <button 
+                      class="btn btn-sm btn-info"
+                      (click)="asignarPremioEspecial(participante)"
+                    >
+                      Premio Especial
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <ng-template #loadingTemplate>
+    <app-loading></app-loading>
+  </ng-template>
+</div>

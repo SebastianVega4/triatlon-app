@@ -1,1 +1,43 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="card">
+    <h2 class="text-center mb-4">Acceso Administrador</h2>
+    
+    <form (ngSubmit)="onSubmit()" *ngIf="!loading; else loadingTemplate">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input 
+          type="email" 
+          class="form-control" 
+          id="email" 
+          [(ngModel)]="email" 
+          name="email"
+          required
+        >
+      </div>
+      
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input 
+          type="password" 
+          class="form-control" 
+          id="password" 
+          [(ngModel)]="password" 
+          name="password"
+          required
+        >
+      </div>
+      
+      <div *ngIf="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
+      
+      <button type="submit" class="btn btn-primary w-100">
+        Iniciar Sesión
+      </button>
+    </form>
+    
+    <ng-template #loadingTemplate>
+      <app-loading></app-loading>
+    </ng-template>
+  </div>
+</div>

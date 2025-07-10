@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { EquiposService } from '../../../services/equipos';
 import { Loading } from '../../shared/loading/loading';
+
 @Component({
   selector: 'app-equipo-detalle',
   standalone: true,

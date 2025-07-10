@@ -1,11 +1,37 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ResultadosService } from '../../../services/resultados';
+import { CommonModule } from '@angular/common';
+import { Loading } from '../../shared/loading/loading';
 
 @Component({
   selector: 'app-visibilidad-resultados',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, Loading],
   templateUrl: './visibilidad-resultados.html',
-  styleUrl: './visibilidad-resultados.scss'
+  styleUrls: ['./visibilidad-resultados.scss']
 })
-export class VisibilidadResultados {
+export class VisibilidadResultados implements OnInit {
+  resultadosVisibles = false;
+  loading = false;
 
+  constructor(private resultadosService: ResultadosService) {}
+
+  ngOnInit(): void {
+    this.resultadosService.getVisibilidadResultados().subscribe(visible => {
+      this.resultadosVisibles = visible;
+    });
+  }
+
+  toggleVisibilidad(): void {
+    this.loading = true;
+    this.resultadosService.toggleVisibilidadResultados(!this.resultadosVisibles)
+      .then(() => {
+        this.resultadosVisibles = !this.resultadosVisibles;
+        this.loading = false;
+      })
+      .catch(error => {
+        console.error('Error cambiando visibilidad:', error);
+        this.loading = false;
+      });
+  }
 }

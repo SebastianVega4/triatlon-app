@@ -5,6 +5,8 @@ import { ResultadosService } from '../../../services/resultados';
 import { map } from 'rxjs/operators';
 import { Loading } from '../../shared/loading/loading';
 import { Equipo } from '../../../interfaces/equipo.interface';
+import { RouterLink } from '@angular/router'; // Cambiado de RouterModule
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-podio',

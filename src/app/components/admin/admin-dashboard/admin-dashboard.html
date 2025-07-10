@@ -1,1 +1,33 @@
-<p>admin-dashboard works!</p>
+<div class="admin-container">
+  <div class="sidebar">
+    <h3>Panel de Administración</h3>
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" routerLink="/admin/gestion-tiempos">Gestión de Tiempos</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/crear-equipo">Crear Equipo</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/admin/visibilidad-resultados">Visibilidad Resultados</a>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-primary mt-3" (click)="calcularResultados()">Calcular Resultados</button>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-secondary mt-2" (click)="toggleVisibilidad()">
+          {{ resultadosVisibles ? 'Ocultar' : 'Mostrar' }} Resultados
+        </button>
+      </li>
+      <li class="nav-item">
+        <button class="btn btn-danger mt-5" (click)="logout()">Cerrar Sesión</button>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<app-loading *ngIf="loading"></app-loading>
