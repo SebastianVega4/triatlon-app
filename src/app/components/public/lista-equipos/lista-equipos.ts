@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { EquiposService } from '../../../services/equipos';
 import { ResultadosService } from '../../../services/resultados';
 import { combineLatest } from 'rxjs';
+import { Loading } from '../../shared/loading/loading';
 
 @Component({
   selector: 'app-lista-equipos',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, Loading],
   templateUrl: './lista-equipos.html',
   styleUrls: ['./lista-equipos.scss']
 })

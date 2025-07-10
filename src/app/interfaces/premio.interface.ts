@@ -3,7 +3,7 @@ export interface Premio {
   categoria: string;
   participante_id: string;
   equipo_id: string;
-  tiempo: string;
+  tiempo?: string;
   nombre_participante?: string;
   nombre_equipo?: string;
 }

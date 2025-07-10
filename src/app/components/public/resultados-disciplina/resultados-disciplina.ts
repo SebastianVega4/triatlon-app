@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ResultadosService } from '../../../services/resultados';
+import { Loading } from '../../shared/loading/loading';
 
 @Component({
   selector: 'app-resultados-disciplina',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Loading],
   templateUrl: './resultados-disciplina.html',
   styleUrls: ['./resultados-disciplina.scss']
 })

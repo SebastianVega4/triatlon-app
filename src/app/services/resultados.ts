@@ -21,31 +21,31 @@ export class ResultadosService {
     return new Promise((resolve, reject) => {
       this.afs.collection<Participante>(`equipos/${equipoId}/participantes`).valueChanges().pipe(
         take(1)
-          .subscribe(participantes => {
-            let totalSegundos = 0;
-            let tienePenalizacion = false;
+      ).subscribe((participantes: Participante[]) => {
+        let totalSegundos = 0;
+        let tienePenalizacion = false;
 
-            participantes.forEach(p => {
-              if (p.penalizado) {
-                tienePenalizacion = true;
-              }
-              const tiempo = p.tiempo || '00:00:00';
-              const [hh, mm, ss] = tiempo.split(':').map(Number);
-              totalSegundos += hh * 3600 + mm * 60 + ss;
-            });
+        participantes.forEach(p => {
+          if (p.penalizado) {
+            tienePenalizacion = true;
+          }
+          const tiempo = p.tiempo || '00:00:00';
+          const [hh, mm, ss] = tiempo.split(':').map(Number);
+          totalSegundos += hh * 3600 + mm * 60 + ss;
+        });
 
-            // Convertir segundos a HH:MM:SS
-            const horas = Math.floor(totalSegundos / 3600);
-            const minutos = Math.floor((totalSegundos % 3600) / 60);
-            const segundos = totalSegundos % 60;
-            const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
+        // Convertir segundos a HH:MM:SS
+        const horas = Math.floor(totalSegundos / 3600);
+        const minutos = Math.floor((totalSegundos % 3600) / 60);
+        const segundos = totalSegundos % 60;
+        const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
 
-            this.afs.doc(`equipos/${equipoId}`).update({
-              tiempo_total: tiempoTotal,
-              penalizacion: tienePenalizacion
-            }).then(() => resolve())
-              .catch(error => reject(error));
-          }));
+        this.afs.doc(`equipos/${equipoId}`).update({
+          tiempo_total: tiempoTotal,
+          penalizacion: tienePenalizacion
+        }).then(() => resolve())
+          .catch(error => reject(error));
+      });
     });
   }
 
@@ -54,22 +54,23 @@ export class ResultadosService {
   }
 
   actualizarPosiciones(): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => { // Añadir return y declarar resolve/reject
       this.afs.collection<Equipo>('equipos', ref => ref.orderBy('tiempo_total')).snapshotChanges().pipe(
         take(1)
-          .subscribe(snapshot => {
-            const batch = this.afs.firestore.batch();
+      ).subscribe((snapshot: any[]) => {
+        const batch = this.afs.firestore.batch();
 
-            snapshot.forEach((doc, index) => {
-              const equipoRef = this.afs.doc(`equipos/${doc.payload.doc.id}`).ref;
-              batch.update(equipoRef, { posicion: index + 1 });
-            });
+        snapshot.forEach((doc, index) => {
+          const equipoRef = this.afs.doc(`equipos/${doc.payload.doc.id}`).ref;
+          batch.update(equipoRef, { posicion: index + 1 });
+        });
 
-            batch.commit().then(() => resolve())
-              .catch(error => reject(error));
-          }));
+        batch.commit().then(() => resolve())
+          .catch(error => reject(error));
+      });
     });
   }
+
 
   calcularPremios(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -106,12 +107,12 @@ export class ResultadosService {
 
             if (participantesCat.length > 0) {
               const mejor = participantesCat.sort((a, b) =>
-                this.compararTiempos(a.tiempo, b.tiempo)
+                this.compararTiempos(a.tiempo || '00:00:00', b.tiempo || '00:00:00')
               )[0];
 
               const nuevoPremio: Premio = {
                 categoria: cat.nombre,
-                participante_id: mejor.id,
+                participante_id: mejor.id || '',
                 equipo_id: mejor.equipoId,
                 tiempo: mejor.tiempo,
                 nombre_participante: mejor.nombre,
@@ -164,6 +165,10 @@ export class ResultadosService {
               }
 
               const ultimoTiempo = lastSnapshot.docs[0].data().tiempo;
+              if (!ultimoTiempo) {
+                reject(new Error('Tiempo no disponible'));
+                return;
+              }
               const [hh, mm, ss] = ultimoTiempo.split(':').map(Number);
               const totalSegundos = hh * 3600 + mm * 60 + ss + 300; // +5 minutos
 
@@ -192,6 +197,48 @@ export class ResultadosService {
 
   getPremios(): Observable<Premio[]> {
     return this.afs.collection<Premio>('premios').valueChanges({ idField: 'id' });
+  }
+
+  getPremiosIndividuales(): Observable<Array<Premio & { equipo_nombre: string, participante_nombre: string }>> {
+    return this.getPremios().pipe(
+      switchMap(premios => {
+        return combineLatest(
+          premios.map(premio =>
+            combineLatest([
+              this.afs.doc<Equipo>(`equipos/${premio.equipo_id}`).valueChanges(),
+              this.afs.doc<Participante>(`equipos/${premio.equipo_id}/participantes/${premio.participante_id}`).valueChanges()
+            ]).pipe(
+              map(([equipo, participante]) => ({
+                ...premio,
+                equipo_nombre: equipo?.nombre || '',
+                participante_nombre: participante?.nombre || ''
+              }))
+            )
+          )
+        );
+      })
+    );
+  }
+
+  getResultadosPorDisciplina(disciplina: string): Observable<any[]> {
+    return this.afs.collectionGroup<Participante>('participantes',
+      ref => ref.where('disciplina', '==', disciplina))
+      .valueChanges().pipe(
+        switchMap((participantes: Participante[]) => {
+          return combineLatest(
+            participantes.map(p =>
+              this.afs.doc<Equipo>(`equipos/${p.equipoId}`).valueChanges().pipe(
+                map(equipo => ({
+                  ...p,
+                  equipo_nombre: equipo?.nombre
+                }))
+              )
+            ));
+        }),
+        map((participantes: any[]) => participantes.sort((a, b) =>
+          this.compararTiempos(a.tiempo, b.tiempo)
+        ))
+      );
   }
 
   setPremioEspecial(participanteId: string, equipoId: string): Promise<void> {
@@ -231,3 +278,11 @@ export class ResultadosService {
     );
   }
 }
+function resolve(): any {
+  throw new Error('Function not implemented.');
+}
+
+function reject(error: any): any {
+  throw new Error('Function not implemented.');
+}
+
