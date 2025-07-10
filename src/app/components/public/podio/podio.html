@@ -1,0 +1,28 @@
+<div class="container">
+  <h2>Podio</h2>
+  
+  <app-loading *ngIf="loading"></app-loading>
+
+  <div *ngIf="!loading" class="podio-container">
+    <!-- Segundo lugar -->
+    <div *ngIf="podio[1]" class="podio-item silver">
+      <div class="podio-posicion">2°</div>
+      <h3>{{ podio[1].nombre }}</h3>
+      <p>Tiempo: {{ podio[1].tiempo_total }}</p>
+    </div>
+
+    <!-- Primer lugar -->
+    <div *ngIf="podio[0]" class="podio-item gold">
+      <div class="podio-posicion">1°</div>
+      <h3>{{ podio[0].nombre }}</h3>
+      <p>Tiempo: {{ podio[0].tiempo_total }}</p>
+    </div>
+
+    <!-- Tercer lugar -->
+    <div *ngIf="podio[2]" class="podio-item bronze">
+      <div class="podio-posicion">3°</div>
+      <h3>{{ podio[2].nombre }}</h3>
+      <p>Tiempo: {{ podio[2].tiempo_total }}</p>
+    </div>
+  </div>
+</div>

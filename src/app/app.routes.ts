@@ -1,22 +1,43 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AdminGuard } from './guards/admin.guard';
+import { Routes } from '@angular/router';
+import { ListaEquipos } from './components/public/lista-equipos/lista-equipos';
+import { PodioComponent } from './components/public/podio/podio';
+import { EquipoDetalle } from './components/public/equipo-detalle/equipo-detalle';
+import { PremiosIndividuales } from './components/public/premios-individuales/premios-individuales';
+import { ResultadosDisciplina } from './components/public/resultados-disciplina/resultados-disciplina';
+import { AdminDashboard } from './components/admin/admin-dashboard/admin-dashboard';
+import { CrearEquipo } from './components/admin/crear-equipo/crear-equipo';
+import { EditarEquipo } from './components/admin/editar-equipo/editar-equipo';
+import { GestionTiempos } from './components/admin/gestion-tiempos/gestion-tiempos';
+import { VisibilidadResultados } from './components/admin/visibilidad-resultados/visibilidad-resultados';
+import { AdminGuard } from './guards/admin-guard';
+import { Login} from './components/shared/login/login';
 
-const routes: Routes = [
+export const routes: Routes = [
+  // Rutas públicas
+  { path: '', component: ListaEquipos, title: 'Inicio - Triatlón' },
+  { path: 'podio', component: PodioComponent, title: 'Podio - Triatlón' },
+  { path: 'equipo/:id', component: EquipoDetalle, title: 'Detalle de Equipo - Triatlón' },
+  { path: 'premios-individuales', component: PremiosIndividuales, title: 'Premios Individuales - Triatlón' },
+  { path: 'resultados/:disciplina', component: ResultadosDisciplina, title: 'Resultados por Disciplina - Triatlón' },
+  
+  // Rutas de administración
   { 
     path: 'admin', 
-    loadChildren: () => import('./admin/admin.module').then(m => m.AdminModule),
-    canActivate: [AdminGuard]
+    component: AdminDashboard,
+    canActivate: [AdminGuard],
+    title: 'Admin Dashboard - Triatlón',
+    children: [
+      { path: 'crear-equipo', component: CrearEquipo, title: 'Crear Equipo - Admin' },
+      { path: 'editar-equipo/:id', component: EditarEquipo, title: 'Editar Equipo - Admin' },
+      { path: 'gestion-tiempos', component: GestionTiempos, title: 'Gestión de Tiempos - Admin' },
+      { path: 'visibilidad-resultados', component: VisibilidadResultados, title: 'Visibilidad de Resultados - Admin' },
+      { path: '', redirectTo: 'gestion-tiempos', pathMatch: 'full' }
+    ]
   },
-  { 
-    path: '', 
-    loadChildren: () => import('./public/public.module').then(m => m.PublicModule)
-  },
-  { path: '**', redirectTo: '' }
+  
+  // Ruta de login (para admin)
+  { path: 'login', component: Login, title: 'Login - Triatlón' },
+  
+  // Redirección para rutas no encontradas
+  { path: '**', redirectTo: '', pathMatch: 'full' }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule { }

@@ -5,42 +5,47 @@ import { Participante } from '../interfaces/participante.interface';
 import { Premio } from '../interfaces/premio.interface';
 import { map, switchMap, take } from 'rxjs/operators';
 import { Observable, combineLatest, of } from 'rxjs';
+import { EquiposService } from './equipos';
+import { subscribe } from 'firebase/data-connect';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ResultadosService {
-  constructor(private afs: AngularFirestore, private equiposService: EquiposService) {}
+  constructor(
+    private afs: AngularFirestore,
+    private equiposService: EquiposService
+  ) { }
 
   calcularTiempoTotal(equipoId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.afs.collection<Participante>(`equipos/${equipoId}/participantes`).valueChanges().pipe(
         take(1)
-        .subscribe(participantes => {
-          let totalSegundos = 0;
-          let tienePenalizacion = false;
+          .subscribe(participantes => {
+            let totalSegundos = 0;
+            let tienePenalizacion = false;
 
-          participantes.forEach(p => {
-            if (p.penalizado) {
-              tienePenalizacion = true;
-            }
-            const tiempo = p.tiempo || '00:00:00';
-            const [hh, mm, ss] = tiempo.split(':').map(Number);
-            totalSegundos += hh * 3600 + mm * 60 + ss;
-          });
+            participantes.forEach(p => {
+              if (p.penalizado) {
+                tienePenalizacion = true;
+              }
+              const tiempo = p.tiempo || '00:00:00';
+              const [hh, mm, ss] = tiempo.split(':').map(Number);
+              totalSegundos += hh * 3600 + mm * 60 + ss;
+            });
 
-          // Convertir segundos a HH:MM:SS
-          const horas = Math.floor(totalSegundos / 3600);
-          const minutos = Math.floor((totalSegundos % 3600) / 60);
-          const segundos = totalSegundos % 60;
-          const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
+            // Convertir segundos a HH:MM:SS
+            const horas = Math.floor(totalSegundos / 3600);
+            const minutos = Math.floor((totalSegundos % 3600) / 60);
+            const segundos = totalSegundos % 60;
+            const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
 
-          this.afs.doc(`equipos/${equipoId}`).update({
-            tiempo_total: tiempoTotal,
-            penalizacion: tienePenalizacion
-          }).then(() => resolve())
-          .catch(error => reject(error));
-        });
+            this.afs.doc(`equipos/${equipoId}`).update({
+              tiempo_total: tiempoTotal,
+              penalizacion: tienePenalizacion
+            }).then(() => resolve())
+              .catch(error => reject(error));
+          }));
     });
   }
 
@@ -52,17 +57,17 @@ export class ResultadosService {
     return new Promise((resolve, reject) => {
       this.afs.collection<Equipo>('equipos', ref => ref.orderBy('tiempo_total')).snapshotChanges().pipe(
         take(1)
-        .subscribe(snapshot => {
-          const batch = this.afs.firestore.batch();
-          
-          snapshot.forEach((doc, index) => {
-            const equipoRef = this.afs.doc(`equipos/${doc.payload.doc.id}`).ref;
-            batch.update(equipoRef, { posicion: index + 1 });
-          });
+          .subscribe(snapshot => {
+            const batch = this.afs.firestore.batch();
 
-          batch.commit().then(() => resolve())
-            .catch(error => reject(error));
-        });
+            snapshot.forEach((doc, index) => {
+              const equipoRef = this.afs.doc(`equipos/${doc.payload.doc.id}`).ref;
+              batch.update(equipoRef, { posicion: index + 1 });
+            });
+
+            batch.commit().then(() => resolve())
+              .catch(error => reject(error));
+          }));
     });
   }
 
@@ -100,7 +105,7 @@ export class ResultadosService {
             );
 
             if (participantesCat.length > 0) {
-              const mejor = participantesCat.sort((a, b) => 
+              const mejor = participantesCat.sort((a, b) =>
                 this.compararTiempos(a.tiempo, b.tiempo)
               )[0];
 
@@ -127,16 +132,16 @@ export class ResultadosService {
   compararTiempos(tiempoA: string, tiempoB: string): number {
     const [hhA, mmA, ssA] = tiempoA.split(':').map(Number);
     const [hhB, mmB, ssB] = tiempoB.split(':').map(Number);
-    
+
     const totalA = hhA * 3600 + mmA * 60 + ssA;
     const totalB = hhB * 3600 + mmB * 60 + ssB;
-    
+
     return totalA - totalB;
   }
 
   aplicarPenalizacion(equipoId: string, disciplina: 'natacion' | 'ciclismo' | 'atletismo'): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.afs.collection<Participante>(`equipos/${equipoId}/participantes`, 
+      this.afs.collection<Participante>(`equipos/${equipoId}/participantes`,
         ref => ref.where('disciplina', '==', disciplina))
         .get().pipe(take(1)).subscribe(snapshot => {
           if (snapshot.empty) {
@@ -148,10 +153,10 @@ export class ResultadosService {
           const participanteId = snapshot.docs[0].id;
 
           // Obtener el último tiempo de la disciplina
-          this.afs.collectionGroup<Participante>('participantes', 
+          this.afs.collectionGroup<Participante>('participantes',
             ref => ref.where('disciplina', '==', disciplina)
-                     .orderBy('tiempo', 'desc')
-                     .limit(1))
+              .orderBy('tiempo', 'desc')
+              .limit(1))
             .get().pipe(take(1)).subscribe(lastSnapshot => {
               if (lastSnapshot.empty) {
                 reject(new Error('No hay participantes en esta disciplina'));
@@ -161,7 +166,7 @@ export class ResultadosService {
               const ultimoTiempo = lastSnapshot.docs[0].data().tiempo;
               const [hh, mm, ss] = ultimoTiempo.split(':').map(Number);
               const totalSegundos = hh * 3600 + mm * 60 + ss + 300; // +5 minutos
-              
+
               const nuevasHoras = Math.floor(totalSegundos / 3600);
               const nuevosMinutos = Math.floor((totalSegundos % 3600) / 60);
               const nuevosSegundos = totalSegundos % 60;
@@ -177,9 +182,9 @@ export class ResultadosService {
                 this.afs.doc(`equipos/${equipoId}`).update({
                   [campoPenalizacion]: true
                 }).then(() => resolve())
-                .catch(error => reject(error));
+                  .catch(error => reject(error));
               })
-              .catch(error => reject(error));
+                .catch(error => reject(error));
             });
         });
     });
@@ -192,11 +197,11 @@ export class ResultadosService {
   setPremioEspecial(participanteId: string, equipoId: string): Promise<void> {
     // Primero, quitar premio especial de cualquier otro participante
     return new Promise((resolve, reject) => {
-      this.afs.collectionGroup<Participante>('participantes', 
+      this.afs.collectionGroup<Participante>('participantes',
         ref => ref.where('premio_especial', '==', true))
         .get().pipe(take(1)).subscribe(snapshot => {
           const batch = this.afs.firestore.batch();
-          
+
           snapshot.forEach(doc => {
             batch.update(doc.ref, { premio_especial: false });
           });
@@ -221,7 +226,7 @@ export class ResultadosService {
   }
 
   getVisibilidadResultados(): Observable<boolean> {
-    return this.afs.doc<{resultados_visibles: boolean}>('configuracion/resultados').valueChanges().pipe(
+    return this.afs.doc<{ resultados_visibles: boolean }>('configuracion/resultados').valueChanges().pipe(
       map(config => config?.resultados_visibles ?? true)
     );
   }

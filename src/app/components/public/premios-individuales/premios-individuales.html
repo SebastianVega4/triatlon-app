@@ -1,0 +1,14 @@
+<div class="container">
+  <h2>Premios Individuales</h2>
+  
+  <app-loading *ngIf="loading"></app-loading>
+
+  <div *ngIf="!loading" class="premios-list">
+    <div *ngFor="let premio of premios" class="premio-card">
+      <h3>{{ getCategoriaNombre(premio.categoria) }}</h3>
+      <p><strong>Ganador:</strong> {{ premio.participante_nombre }}</p>
+      <p><strong>Equipo:</strong> {{ premio.equipo_nombre }}</p>
+      <p *ngIf="premio.tiempo"><strong>Tiempo:</strong> {{ premio.tiempo }}</p>
+    </div>
+  </div>
+</div>

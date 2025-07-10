@@ -1,0 +1,11 @@
+<header class="header">
+  <nav>
+    <a routerLink="/" class="logo">Triatlón App</a>
+    <div class="nav-links">
+      <a routerLink="/">Inicio</a>
+      <a routerLink="/podio">Podio</a>
+      <a routerLink="/premios-individuales">Premios Individuales</a>
+      <a *ngIf="isAdminRoute" routerLink="/admin">Admin</a>
+    </div>
+  </nav>
+</header>
