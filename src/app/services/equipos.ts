@@ -1,79 +1,46 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { FirebaseService } from './firebase';
+import { Observable } from 'rxjs';
 import { Equipo } from '../interfaces/equipo.interface';
 import { Participante } from '../interfaces/participante.interface';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class EquiposService {
-  private equiposCollection: AngularFirestoreCollection<Equipo>;
-
-  constructor(private afs: AngularFirestore) {
-    this.equiposCollection = this.afs.collection<Equipo>('equipos');
-  }
+  constructor(private firebase: FirebaseService) {}
 
   getEquipos(): Observable<Equipo[]> {
-    return this.equiposCollection.snapshotChanges().pipe(
-      map(actions => actions.map(a => {
-        const data = a.payload.doc.data() as Equipo;
-        const id = a.payload.doc.id;
-        return { id, ...data };
-      }))
-    );
+    return this.firebase.getEquipos();
   }
 
-  getEquipo(id: string): Observable<Equipo> {
-    return this.equiposCollection.doc<Equipo>(id).valueChanges().pipe(
-      map(equipo => {
-        if (equipo) {
-          return { id, ...equipo };
-        }
-        throw new Error('Equipo no encontrado');
-      })
-    );
+  getEquipo(id: string): Observable<Equipo | undefined> {
+    return this.firebase.getEquipo(id);
   }
 
-  async addEquipo(equipo: Equipo): Promise<string> {
-    const docRef = await this.equiposCollection.add({
-      ...equipo,
-      createdAt: new Date(),
-      visible: true
-    });
-    return docRef.id;
+  addEquipo(equipo: Omit<Equipo, 'id'>): Promise<string> {
+    return this.firebase.createEquipo(equipo);
   }
 
-  updateEquipo(id: string, equipo: Partial<Equipo>): Promise<void> {
-    return this.equiposCollection.doc(id).update(equipo);
+  updateEquipo(id: string, data: Partial<Equipo>): Promise<void> {
+    return this.firebase.updateEquipo(id, data);
   }
 
   deleteEquipo(id: string): Promise<void> {
-    return this.equiposCollection.doc(id).delete();
+    return this.firebase.deleteEquipo(id);
   }
 
-  // Métodos para participantes
   getParticipantes(equipoId: string): Observable<Participante[]> {
-    return this.afs.collection<Participante>(`equipos/${equipoId}/participantes`).valueChanges({ idField: 'id' });
+    return this.firebase.getParticipantes(equipoId);
   }
 
-  async addParticipante(equipoId: string, participante: Participante): Promise<string> {
-    const docRef = await this.afs.collection(`equipos/${equipoId}/participantes`).add({
-      ...participante,
-      equipoId,
-      tiempo: participante.tiempo || '00:00:00',
-      premio_especial: false,
-      penalizado: false
-    });
-    return docRef.id;
+  addParticipante(equipoId: string, participante: Omit<Participante, 'id'>): Promise<string> {
+    return this.firebase.createParticipante(equipoId, participante);
   }
 
-  updateParticipante(equipoId: string, participanteId: string, participante: Partial<Participante>): Promise<void> {
-    return this.afs.doc(`equipos/${equipoId}/participantes/${participanteId}`).update(participante);
+  updateParticipante(equipoId: string, participanteId: string, data: Partial<Participante>): Promise<void> {
+    return this.firebase.updateParticipante(equipoId, participanteId, data);
   }
 
   deleteParticipante(equipoId: string, participanteId: string): Promise<void> {
-    return this.afs.doc(`equipos/${equipoId}/participantes/${participanteId}`).delete();
+    return this.firebase.deleteParticipante(equipoId, participanteId);
   }
 }

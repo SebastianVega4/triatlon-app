@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -11,7 +12,9 @@ import { RouterLink } from '@angular/router';
 export class Header {
   isAdminRoute = false;
 
-  constructor() {
-    // Lógica para determinar si está en ruta admin
+  constructor(private router: Router) {
+    this.router.events.subscribe(() => {
+      this.isAdminRoute = this.router.url.startsWith('/admin');
+    });
   }
 }
