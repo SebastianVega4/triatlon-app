@@ -1,1 +1,88 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~bootstrap/scss/bootstrap';
+
+/* Estilos generales */
+body {
+  padding-top: 56px;
+  background-color: #f8f9fa;
+}
+
+/* Estilos para el podio */
+.podio {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin: 2rem 0;
+  
+  .puesto {
+    margin: 0 1rem;
+    text-align: center;
+    
+    &.oro {
+      order: 2;
+    }
+    
+    &.plata {
+      order: 1;
+    }
+    
+    &.bronce {
+      order: 3;
+    }
+  }
+}
+
+/* Colores para posiciones */
+.gold {
+  background-color: #FFD700 !important;
+}
+
+.silver {
+  background-color: #C0C0C0 !important;
+}
+
+.bronze {
+  background-color: #CD7F32 !important;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: 0.25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border .75s linear infinite;
+}
+
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+/* Estilos para tarjetas de equipos */
+.team-card {
+  transition: transform 0.2s;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Estilos para la tabla de resultados */
+.result-table {
+  th {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+  }
+  
+  tr.highlight {
+    td {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+  }
+}
