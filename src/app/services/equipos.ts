@@ -6,13 +6,13 @@ import { Participante } from '../interfaces/participante.interface';
 
 @Injectable({ providedIn: 'root' })
 export class EquiposService {
-  constructor(private firebase: FirebaseService) {}
+  constructor(private firebase: FirebaseService) { }
 
   getEquipos(): Observable<Equipo[]> {
     return this.firebase.getEquipos();
   }
 
-  getEquipo(id: string): Observable<Equipo | undefined> {
+  getEquipo(id: string): Observable<Equipo | null> {
     return this.firebase.getEquipo(id);
   }
 

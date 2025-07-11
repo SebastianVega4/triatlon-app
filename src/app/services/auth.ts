@@ -1,14 +1,19 @@
 import { Injectable } from '@angular/core';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import {
+  Auth,
+  signInWithEmailAndPassword,
+  signOut,
+  authState
+} from '@angular/fire/auth';
 import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+  constructor(private auth: Auth, private router: Router) {}
 
   async login(email: string, password: string): Promise<boolean> {
     try {
-      const result = await this.afAuth.signInWithEmailAndPassword(email, password);
+      const result = await signInWithEmailAndPassword(this.auth, email, password);
       return !!result.user;
     } catch (error) {
       console.error('Error en login:', error);
@@ -17,12 +22,12 @@ export class AuthService {
   }
 
   logout(): Promise<void> {
-    return this.afAuth.signOut().then(() => {
+    return signOut(this.auth).then(() => {
       this.router.navigate(['/login']);
     });
   }
 
   getCurrentUser() {
-    return this.afAuth.authState;
+    return authState(this.auth);
   }
 }

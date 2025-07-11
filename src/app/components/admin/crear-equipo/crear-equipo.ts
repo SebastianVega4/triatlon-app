@@ -9,12 +9,13 @@ import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-crear-equipo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Loading,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, Loading],
   templateUrl: './crear-equipo.html',
   styleUrls: ['./crear-equipo.scss']
 })
 export class CrearEquipo implements OnInit {
   equipoForm: FormGroup;
+  
   participantes: any[] = [];
   loading = false;
   disciplinas = ['natacion', 'ciclismo', 'atletismo'];
@@ -56,7 +57,6 @@ export class CrearEquipo implements OnInit {
       return;
     }
 
-    // Verificar que todas las disciplinas estén asignadas y sean únicas
     const disciplinasAsignadas = this.participantes.map(p => p.disciplina);
     if (new Set(disciplinasAsignadas).size !== 3 || disciplinasAsignadas.includes(null)) {
       alert('Debe asignar una disciplina diferente a cada participante');
@@ -65,16 +65,17 @@ export class CrearEquipo implements OnInit {
 
     this.loading = true;
     try {
-      const equipoId = await this.equiposService.addEquipo(this.equipoForm.value);
-      
+      const equipoData = this.equipoForm.value;
+      const equipoId = await this.equiposService.addEquipo(equipoData);
+      // Crear participantes secuencialmente para mejor manejo de errores
       for (const participante of this.participantes) {
         await this.equiposService.addParticipante(equipoId, participante);
       }
-      
+
       this.router.navigate(['/admin/gestion-tiempos']);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error guardando equipo:', error);
-      alert('Error guardando equipo');
+      alert(`Error: ${error.message || 'Por favor intente nuevamente.'}`);
     } finally {
       this.loading = false;
     }

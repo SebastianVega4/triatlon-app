@@ -1,9 +1,9 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideAuth, getAuth } from '@angular/fire/auth';
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 
@@ -11,10 +11,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideAnimations(),
-    importProvidersFrom([
-      AngularFireModule.initializeApp(environment.firebase),
-      AngularFireAuthModule,
-      AngularFirestoreModule
-    ])
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideFirestore(() => getFirestore()),
+    provideAuth(() => getAuth()),
   ]
 };

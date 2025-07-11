@@ -21,7 +21,7 @@ export class GestionTiempos implements OnInit {
   constructor(
     private equiposService: EquiposService,
     private resultadosService: ResultadosService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarEquipos();
@@ -83,15 +83,18 @@ export class GestionTiempos implements OnInit {
 
     if (confirm(`¿Aplicar penalización de 5 minutos al participante ${participante.nombre}?`)) {
       this.resultadosService.aplicarPenalizacion(
+        participante.id,
         participante.equipoId,
         participante.disciplina
-      ).then(() => {
-        alert('Penalización aplicada correctamente');
-        this.cargarEquipos();
-      }).catch(error => {
-        console.error('Error aplicando penalización:', error);
-        alert('Error aplicando penalización');
-      });
+      )
+        .then(() => {
+          alert('Penalización aplicada correctamente');
+          this.cargarEquipos();
+        })
+        .catch((error: Error) => {
+          console.error('Error al aplicar penalización:', error);
+          alert('Error aplicando penalización: ' + error.message);
+        });
     }
   }
 
