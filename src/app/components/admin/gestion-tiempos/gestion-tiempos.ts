@@ -72,7 +72,7 @@ export class GestionTiempos implements OnInit {
   }
 
   validarFormatoTiempo(tiempo: string): boolean {
-    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/.test(tiempo);
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](\.\d{1,3})?$/.test(tiempo);
   }
 
   aplicarPenalizacion(participante: any): void {

@@ -10,8 +10,8 @@ import { Premio } from '../interfaces/premio.interface';
 export class ResultadosService {
   constructor(private firebase: FirebaseService) { }
 
-  private pad(num: number): string {
-    return num < 10 ? `0${num}` : num.toString();
+  private pad(num: number, digits: number = 2): string {
+    return num.toString().padStart(digits, '0');
   }
 
   private categorias = [
@@ -23,127 +23,143 @@ export class ResultadosService {
     { nombre: 'mejor_hombre_atletismo', genero: 'M', disciplina: 'atletismo' }
   ];
 
- aplicarPenalizacion(participanteId: string, equipoId: string, disciplina: string): Promise<void> {
+  aplicarPenalizacion(participanteId: string, equipoId: string, disciplina: string): Promise<void> {
   return new Promise((resolve, reject) => {
     this.firebase.getParticipantes(equipoId).pipe(take(1)).subscribe({
       next: async (participantes) => {
-        const participante = participantes.find(p => p.id === participanteId);
-        if (!participante) {
-          reject('Participante no encontrado');
-          return;
-        }
+          const participante = participantes.find(p => p.id === participanteId);
+          if (!participante) {
+            reject('Participante no encontrado');
+            return;
+          }
 
-        // Get all participants in the same discipline to find the last time
-        const allParticipants = await this.firebase.getAllParticipantes().pipe(take(1)).toPromise();
-        if (!allParticipants) {
-          reject('No se pudieron obtener los participantes');
-          return;
-        }
+          // Get all participants in the same discipline to find the last time
+          const allParticipants = await this.firebase.getAllParticipantes().pipe(take(1)).toPromise();
+          if (!allParticipants) {
+            reject('No se pudieron obtener los participantes');
+            return;
+          }
 
-        const disciplineParticipants = allParticipants.filter(p => 
-          p.disciplina === disciplina && 
-          p.tiempo && 
-          p.tiempo !== '00:00:00' &&
-          !p.penalizado
-        );
+          const disciplineParticipants = allParticipants.filter(p =>
+            p.disciplina === disciplina &&
+            p.tiempo &&
+            p.tiempo !== '00:00:00' &&
+            !p.penalizado
+          );
 
-        if (disciplineParticipants.length === 0) {
-          reject('No hay participantes en esta disciplina para calcular penalización');
-          return;
-        }
+          if (disciplineParticipants.length === 0) {
+            reject('No hay participantes en esta disciplina para calcular penalización');
+            return;
+          }
 
-        const lastParticipant = disciplineParticipants.sort((a, b) => 
-          this.compararTiempos(b.tiempo || '00:00:00', a.tiempo || '00:00:00')
-        )[0];
+          const lastParticipant = disciplineParticipants.sort((a, b) =>
+            this.compararTiempos(b.tiempo || '00:00:00', a.tiempo || '00:00:00')
+          )[0];
 
-        if (!lastParticipant.tiempo) {
-          reject('El último participante no tiene tiempo registrado');
-          return;
-        }
+          if (!lastParticipant.tiempo) {
+            reject('El último participante no tiene tiempo registrado');
+            return;
+          }
 
-        const [hh, mm, ss] = lastParticipant.tiempo.split(':').map(Number);
-        const totalSeconds = hh * 3600 + mm * 60 + ss + 300; // Add 5 minutes (300 seconds)
+          const [hms, ms] = lastParticipant.tiempo.split('.');
+        const [hh, mm, ss] = hms.split(':').map(Number);
+        const milliseconds = ms ? Number(ms) : 0;
+        const totalMilliseconds = (hh * 3600 + mm * 60 + ss) * 1000 + milliseconds + 300000;
 
-        const newHours = Math.floor(totalSeconds / 3600);
-        const newMinutes = Math.floor((totalSeconds % 3600) / 60);
-        const newSeconds = totalSeconds % 60;
-        const newTime = `${this.pad(newHours)}:${this.pad(newMinutes)}:${this.pad(newSeconds)}`;
-
-        await this.firebase.updateParticipante(equipoId, participanteId, {
-          tiempo: newTime,
-          penalizado: true
-        });
-
-        await this.calcularTiempoTotal(equipoId);
-        await this.actualizarPosiciones();
-        await this.calcularPremios();
-
-        resolve();
-      },
-      error: (error: any) => reject(error)
-    });
-  });
-}
-
-  calcularTiempoTotal(equipoId: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.firebase.getParticipantes(equipoId).pipe(take(1)).subscribe({
-        next: (participantes) => {
-          let totalSegundos = 0;
-          let tienePenalizacion = false;
-
-          participantes.forEach(p => {
-            if (p.penalizado) {
-              tienePenalizacion = true;
-            }
-            const tiempo = p.tiempo || '00:00:00';
-            const [hh, mm, ss] = tiempo.split(':').map(Number);
-            totalSegundos += hh * 3600 + mm * 60 + ss;
+        const newHours = Math.floor(totalMilliseconds / 3600000);
+        const remainingMs = totalMilliseconds % 3600000;
+        const newMinutes = Math.floor(remainingMs / 60000);
+        const remainingSecMs = remainingMs % 60000;
+        const newSeconds = Math.floor(remainingSecMs / 1000);
+        const newMilliseconds = remainingSecMs % 1000;
+        
+        const newTime = `${this.pad(newHours)}:${this.pad(newMinutes)}:${this.pad(newSeconds)}.${this.pad(newMilliseconds, 3)}`;
+          await this.firebase.updateParticipante(equipoId, participanteId, {
+            tiempo: newTime,
+            penalizado: true
           });
 
-          const horas = Math.floor(totalSegundos / 3600);
-          const minutos = Math.floor((totalSegundos % 3600) / 60);
-          const segundos = totalSegundos % 60;
-          const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}`;
+          await this.calcularTiempoTotal(equipoId);
+          await this.actualizarPosiciones();
+          await this.calcularPremios();
 
-          this.firebase.updateEquipo(equipoId, {
-            tiempo_total: tiempoTotal,
-            penalizacion: tienePenalizacion
-          }).then(resolve).catch(reject);
+          resolve();
         },
-        error: reject
+        error: (error: any) => reject(error)
       });
     });
   }
 
-  actualizarPosiciones(): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    this.firebase.getEquipos().pipe(take(1)).subscribe({
-      next: (equipos) => {
-        const equiposOrdenados = [...equipos].sort((a, b) =>
-          this.compararTiempos(a.tiempo_total || '99:59:59', b.tiempo_total || '99:59:59')
-        );
+  calcularTiempoTotal(equipoId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    this.firebase.getParticipantes(equipoId).pipe(take(1)).subscribe({
+      next: (participantes) => {
+        let totalMilliseconds = 0;
+        let tienePenalizacion = false;
 
-        const updates = equiposOrdenados.map((equipo, index) => ({
-          id: equipo.id,
-          posicion: index + 1
-        }));
+        participantes.forEach(p => {
+          if (p.penalizado) {
+            tienePenalizacion = true;
+          }
+          const tiempo = p.tiempo || '00:00:00.000';
+          const [hms, ms] = tiempo.split('.');
+          const [hh, mm, ss] = hms.split(':').map(Number);
+          const milliseconds = ms ? Number(ms) : 0;
+          totalMilliseconds += (hh * 3600 + mm * 60 + ss) * 1000 + milliseconds;
+        });
 
-        Promise.all(
-          updates.map(e => this.firebase.updateEquipo(e.id as string, { posicion: e.posicion }))
-        )
-        .then(() => resolve())
-        .catch(reject);
+        const horas = Math.floor(totalMilliseconds / 3600000);
+        const remainingMs = totalMilliseconds % 3600000;
+        const minutos = Math.floor(remainingMs / 60000);
+        const remainingSecMs = remainingMs % 60000;
+        const segundos = Math.floor(remainingSecMs / 1000);
+        const milisegundos = remainingSecMs % 1000;
+        
+        const tiempoTotal = `${this.pad(horas)}:${this.pad(minutos)}:${this.pad(segundos)}.${this.pad(milisegundos, 3)}`;
+
+        this.firebase.updateEquipo(equipoId, {
+          tiempo_total: tiempoTotal,
+          penalizacion: tienePenalizacion
+        }).then(resolve).catch(reject);
       },
       error: reject
     });
   });
 }
 
+  actualizarPosiciones(): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.firebase.getEquipos().pipe(take(1)).subscribe({
+        next: (equipos) => {
+          const equiposOrdenados = [...equipos].sort((a, b) =>
+            this.compararTiempos(a.tiempo_total || '99:59:59', b.tiempo_total || '99:59:59')
+          );
+
+          const updates = equiposOrdenados.map((equipo, index) => ({
+            id: equipo.id,
+            posicion: index + 1
+          }));
+
+          Promise.all(
+            updates.map(e => this.firebase.updateEquipo(e.id as string, { posicion: e.posicion }))
+          )
+            .then(() => resolve())
+            .catch(reject);
+        },
+        error: reject
+      });
+    });
+  }
+
   compararTiempos(tiempoA: string, tiempoB: string): number {
-    const [hhA, mmA, ssA] = tiempoA.split(':').map(Number);
-    const [hhB, mmB, ssB] = tiempoB.split(':').map(Number);
-    return (hhA * 3600 + mmA * 60 + ssA) - (hhB * 3600 + mmB * 60 + ssB);
+    const parseTime = (time: string) => {
+      const [hms, ms] = time.split('.');
+      const [hh, mm, ss] = hms.split(':').map(Number);
+      const milliseconds = ms ? Number(ms) : 0;
+      return (hh * 3600 + mm * 60 + ss) * 1000 + milliseconds;
+    };
+
+    return parseTime(tiempoA) - parseTime(tiempoB);
   }
 
   calcularPremios(): Promise<void> {

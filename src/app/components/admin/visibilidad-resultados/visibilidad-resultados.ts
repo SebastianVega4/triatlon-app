@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ResultadosService } from '../../../services/resultados';
 import { CommonModule } from '@angular/common';
-import { Loading } from '../../shared/loading/loading';
 
 @Component({
   selector: 'app-visibilidad-resultados',
   standalone: true,
-  imports: [CommonModule, Loading],
+  imports: [CommonModule],
   templateUrl: './visibilidad-resultados.html',
   styleUrls: ['./visibilidad-resultados.scss']
 })

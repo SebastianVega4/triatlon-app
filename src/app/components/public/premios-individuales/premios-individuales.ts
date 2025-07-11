@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router'; // Cambiado de RouterModule
 import { ResultadosService } from '../../../services/resultados';
 import { Loading } from '../../shared/loading/loading';
 
 @Component({
   selector: 'app-premios-individuales',
   standalone: true,
-  imports: [CommonModule, RouterLink, Loading],
+  imports: [CommonModule, Loading],
   templateUrl: './premios-individuales.html',
   styleUrls: ['./premios-individuales.scss']
 })
