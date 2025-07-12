@@ -1,0 +1,184 @@
+@use 'bootstrap/scss/bootstrap' as *;
+@use '../../../animations' as *;
+// Colores UPTC Colombia
+$uptc-primary: #005883;
+$uptc-secondary: #F0B310;
+$uptc-accent: #6D6E70;
+$uptc-light: #E6E7E8;
+$uptc-dark: #333333;
+
+// Colores adicionales para el triatlón
+$tri-red: #E74C3C;
+$tri-blue: #3498DB;
+$tri-green: #2ECC71;
+
+// Espaciados
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
+
+// Tipografía
+$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Breakpoints
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Sombras
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($uptc-dark, 0.075);
+$box-shadow: 0 0.5rem 1rem rgba($uptc-dark, 0.15);
+$box-shadow-lg: 0 1rem 3rem rgba($uptc-dark, 0.175);
+
+// Transiciones
+$transition-base: all 0.3s ease-in-out;
+$transition-fade: opacity 0.15s linear;
+$transition-collapse: height 0.35s ease;
+
+.equipo-detalle {
+  animation: fadeIn 0.5s ease-out;
+  background: white;
+  border-radius: 0.75rem;
+  padding: 2rem;
+  box-shadow: $box-shadow-sm;
+  margin: 2rem auto;
+  max-width: 900px;
+
+  h2 {
+    color: $uptc-primary;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    border-bottom: 3px solid $uptc-secondary;
+    padding-bottom: 0.5rem;
+  }
+
+  .penalizado {
+    color: $tri-red;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .premio-especial {
+    color: $uptc-secondary;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .participantes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+
+  .participante-card {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: $box-shadow-sm;
+    transition: $transition-base;
+    border-left: 4px solid $uptc-primary;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: $box-shadow;
+    }
+
+    h4 {
+      color: $uptc-primary;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      margin: 0.5rem 0;
+    }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    color: $uptc-primary;
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 2rem;
+    transition: $transition-base;
+
+    &:hover {
+      color: darken($uptc-primary, 10%);
+      transform: translateX(-3px);
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .equipo-detalle {
+    padding: 1.5rem;
+
+    h2 {
+      font-size: 1.75rem;
+    }
+
+    .participantes-list {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.penalizado {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.penalizado-badge {
+  background-color: #ffebee;
+  color: #d32f2f;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 0.9em;
+}
+
+.participante-card {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  
+  &.penalizado {
+    border-left: 4px solid #d32f2f;
+    background-color: #fff5f5;
+  }
+}
+
+.navigation-links {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  
+  .back-link {
+    text-decoration: none;
+    color: #1976d2;
+    font-weight: 500;
+    
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

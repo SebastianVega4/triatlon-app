@@ -1,0 +1,32 @@
+@use '../../../variables' as *;
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  
+  .social-link {
+    color: white;
+    font-size: 1.25rem;
+    transition: variables.$transition-base;
+    
+    &:hover {
+      color: variables.$uptc-secondary;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+}

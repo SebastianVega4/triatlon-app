@@ -3,22 +3,29 @@
 
   <div *ngIf="!loading && equipo" class="equipo-detalle">
     <h2>{{ equipo.nombre }}</h2>
-    <p *ngIf="equipo.posicion">Posición: {{ equipo.posicion }}°</p>
-    <p>Tiempo total: {{ equipo.tiempo_total || 'Sin registrar' }}</p>
+    <div *ngIf="!resultadosVisibles" class="alert alert-info">
+      El cálculo del total está oculto temporalmente. Por favor, espere a la ceremonia de premiación.
+    </div>
+    <p *ngIf="equipo.posicion && resultadosVisibles">Posición: {{ equipo.posicion }}°</p>
+    <p *ngIf="resultadosVisibles">Tiempo total: {{ equipo.tiempo_total || 'Sin registrar' }}</p>
     <p *ngIf="equipo.penalizacion" class="penalizado">⚠️ Equipo penalizado</p>
 
     <h3>Participantes</h3>
     <div class="participantes-list">
-      <div *ngFor="let p of participantes" class="participante-card">
+      <div *ngFor="let p of participantes" class="participante-card" [class.penalizado]="p.penalizado">
         <h4>{{ p.nombre }}</h4>
-        <p>Disciplina: {{ p.disciplina | titlecase }}</p>
-        <p>Género: {{ p.genero === 'M' ? 'Masculino' : 'Femenino' }}</p>
-        <p>Tiempo: {{ p.tiempo || 'Sin registrar' }}</p>
-        <p *ngIf="p.penalizacion" class="penalizado">⚠️ Penalizado</p>
-        <p *ngIf="p.premio_especial" class="premio-especial">🌟 Premio especial</p>
+        <p> {{ p.disciplina | titlecase }}</p>
+        <p> {{ p.genero === 'M' ? 'Masculino' : 'Femenino' }}</p>
+        <p> {{ p.tiempo || 'Sin registrar' }}</p>
+        <p *ngIf="p.penalizado" class="penalizado-badge">
+          ⚠️ Penalizado ({{ getDisciplinaPenalizacion(p.disciplina) }})
+        </p>
       </div>
     </div>
 
-    <a routerLink="/" class="back-link">← Volver a la lista</a>
+    <div class="navigation-links">
+      <a routerLink="/" class="back-link">← Volver a la LISTA</a>
+      <a routerLink="/podio" class="back-link">← Volver al PODIO</a>
+    </div>
   </div>
 </div>

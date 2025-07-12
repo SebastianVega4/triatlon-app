@@ -1,0 +1,53 @@
+@use '../../../variables' as *;
+
+.premios-list {
+  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.premio-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: $box-shadow-sm;
+  transition: $transition-base;
+  animation: fadeIn 0.5s ease-out;
+  border-left: 4px solid $uptc-secondary;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $box-shadow;
+  }
+
+  &::before {
+    content: '🏆';
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.5rem;
+    opacity: 0.2;
+  }
+
+  h3 {
+    color: $uptc-primary;
+    margin-bottom: 1rem;
+    padding-right: 2rem;
+  }
+
+  p {
+    margin: 0.5rem 0;
+    strong {
+      color: $uptc-dark;
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .premios-list {
+    grid-template-columns: 1fr;
+  }
+}

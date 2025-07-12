@@ -1,0 +1,203 @@
+@use 'bootstrap/scss/bootstrap' as *;
+@use '../../../animations.scss' as *;
+
+// Colores UPTC Colombia
+$uptc-primary: #005883;
+$uptc-secondary: #F0B310;
+$uptc-accent: #6D6E70;
+$uptc-light: #E6E7E8;
+$uptc-dark: #333333;
+
+// Colores adicionales para el triatlón
+$tri-red: #E74C3C;
+$tri-blue: #3498DB;
+$tri-green: #2ECC71;
+
+// Espaciados
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
+
+// Tipografía
+$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Breakpoints
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Sombras
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($uptc-dark, 0.075);
+$box-shadow: 0 0.5rem 1rem rgba($uptc-dark, 0.15);
+$box-shadow-lg: 0 1rem 3rem rgba($uptc-dark, 0.175);
+
+// Transiciones
+$transition-base: all 0.3s ease-in-out;
+$transition-fade: opacity 0.15s linear;
+$transition-collapse: height 0.35s ease;
+
+.admin-container {
+  display: flex;
+  min-height: calc(100vh - 56px);
+  background-color: $uptc-light;
+
+  .sidebar {
+    width: 280px;
+    background-color: $uptc-primary;
+    color: white;
+    padding: 2rem 1.5rem;
+    box-shadow: $box-shadow;
+    position: relative;
+    z-index: 10;
+
+    h3 {
+      color: white;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid $uptc-secondary;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      &::before {
+        content: '⚙️';
+      }
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      &-item {
+        .nav-link {
+          color: rgba(white, 0.85);
+          padding: 0.75rem 1rem;
+          border-radius: 0.5rem;
+          text-decoration: none;
+          transition: $transition-base;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+
+          &:hover {
+            background-color: rgba(white, 0.1);
+            color: white;
+          }
+
+          &.active {
+            background-color: $uptc-secondary;
+            color: $uptc-dark;
+            font-weight: 500;
+          }
+
+          &::before {
+            font-family: 'bootstrap-icons';
+            font-size: 1.1rem;
+          }
+
+          &[routerLink="/admin/gestion-tiempos"]::before {
+            content: '\F64E'; // bi-stopwatch
+          }
+
+          &[routerLink="/admin/crear-equipo"]::before {
+            content: '\F4FE'; // bi-people
+          }
+
+          &[routerLink="/admin/visibilidad-resultados"]::before {
+            content: '\F470'; // bi-eye
+          }
+        }
+
+        .btn {
+          width: 100%;
+          font-weight: 500;
+
+          &.btn-primary {
+            background-color: $uptc-secondary;
+            border-color: $uptc-secondary;
+            color: $uptc-dark;
+
+            &:hover {
+              background-color: darken($uptc-secondary, 10%);
+            }
+          }
+
+          &.btn-danger {
+            margin-top: 2rem;
+          }
+        }
+      }
+    }
+  }
+
+  .main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 1rem 0 0 0;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+  }
+}
+
+@include media-breakpoint-down(lg) {
+  .admin-container {
+    flex-direction: column;
+
+    .sidebar {
+      width: 100%;
+      padding: 1rem;
+
+      h3 {
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+      }
+
+      .nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        &-item {
+          flex: 1 1 200px;
+
+          .btn {
+            margin-top: 0.5rem !important;
+          }
+        }
+      }
+    }
+
+    .main-content {
+      border-radius: 0;
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .admin-container {
+    .sidebar {
+      .nav {
+        flex-direction: column;
+
+        &-item {
+          flex: 1 1 auto;
+        }
+      }
+    }
+  }
+}

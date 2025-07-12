@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ResultadosService } from '../../../services/resultados';
 import { Loading } from '../../shared/loading/loading';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-premios-individuales',
@@ -13,12 +14,17 @@ import { Loading } from '../../shared/loading/loading';
 export class PremiosIndividuales implements OnInit {
   premios: any[] = [];
   loading = true;
+  resultadosVisibles = true;
 
   constructor(private resultadosService: ResultadosService) {}
 
   ngOnInit(): void {
-    this.resultadosService.getPremiosIndividuales().subscribe(premios => {
+    combineLatest([
+      this.resultadosService.getPremiosIndividuales(),
+      this.resultadosService.getVisibilidadResultados()
+    ]).subscribe(([premios, visibles]) => {
       this.premios = premios;
+      this.resultadosVisibles = visibles;
       this.loading = false;
     });
   }

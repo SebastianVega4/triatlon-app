@@ -28,7 +28,7 @@ export class ListaEquipos implements OnInit {
       this.equiposService.getEquipos(),
       this.resultadosService.getVisibilidadResultados()
     ]).subscribe(([equipos, visibles]) => {
-      this.equipos = equipos.sort((a, b) => (a.posicion || 999) - (b.posicion || 999));
+      this.equipos = equipos;
       this.resultadosVisibles = visibles;
       this.loading = false;
     });

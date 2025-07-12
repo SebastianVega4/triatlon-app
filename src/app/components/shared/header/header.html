@@ -1,11 +1,29 @@
 <header class="header">
   <nav>
-    <a routerLink="/" class="logo">Triatlón App</a>
+    <a routerLink="/" class="logo">
+      <i class="bi bi-trophy-fill me-2"></i>
+      Triatlón UPTC
+    </a>
     <div class="nav-links">
-      <a routerLink="/">Inicio</a>
-      <a routerLink="/podio">Podio</a>
-      <a routerLink="/premios-individuales">Premios Individuales</a>
-      <a *ngIf="isAdminRoute" routerLink="/admin">Admin</a>
+      <a routerLink="/">
+        <i class="bi bi-house-door me-1"></i>
+        Inicio
+      </a>
+      <a routerLink="/podio">
+        <i class="bi bi-award me-1"></i>
+        Podio
+      </a>
+      <a routerLink="/premios-individuales">
+        <i class="bi bi-star-fill me-1"></i>
+        Premios
+      </a>
+      <a routerLink="/admin">
+        <i class="bi bi-shield-lock me-1"></i>
+        Admin
+      </a>
     </div>
+    <button class="navbar-toggler d-md-none" (click)="toggleMenu()">
+      <i class="bi bi-list"></i>
+    </button>
   </nav>
 </header>

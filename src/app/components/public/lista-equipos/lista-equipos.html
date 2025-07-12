@@ -8,10 +8,9 @@
       Los resultados están ocultos temporalmente. Por favor, espere a la ceremonia de premiación.
     </div>
 
-    <div *ngFor="let equipo of equipos" class="equipo-card" [class]="getClasePosicion(equipo.posicion)">
+    <div *ngFor="let equipo of equipos" class="equipo-card">
       <h3>
         <a [routerLink]="['/equipo', equipo.id]">{{ equipo.nombre }}</a>
-        <span *ngIf="equipo.posicion" class="posicion">#{{ equipo.posicion }}</span>
       </h3>
       
       <div *ngIf="resultadosVisibles" class="equipo-info">

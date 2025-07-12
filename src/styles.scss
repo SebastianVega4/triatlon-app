@@ -1,88 +1,543 @@
 @use 'bootstrap/scss/bootstrap' as *;
+@use './app/animations.scss' as *;
+
+// Colores UPTC Colombia
+$uptc-primary: #005883;
+$uptc-secondary: #F0B310;
+$uptc-accent: #6D6E70;
+$uptc-light: #E6E7E8;
+$uptc-dark: #333333;
+
+// Colores adicionales para el triatlón
+$tri-red: #E74C3C;
+$tri-blue: #3498DB;
+$tri-green: #2ECC71;
+
+// Espaciados
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
+
+// Tipografía
+$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Breakpoints
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Sombras
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($uptc-dark, 0.075);
+$box-shadow: 0 0.5rem 1rem rgba($uptc-dark, 0.15);
+$box-shadow-lg: 0 1rem 3rem rgba($uptc-dark, 0.175);
+
+// Transiciones
+$transition-base: all 0.3s ease-in-out;
+$transition-fade: opacity 0.15s linear;
+$transition-collapse: height 0.35s ease;
+
 
 /* Estilos generales */
 body {
   padding-top: 56px;
-  background-color: #f8f9fa;
+  background-color: $uptc-light;
+  font-family: $font-family-base;
+  color: $uptc-dark;
+  line-height: $line-height-base;
 }
 
-/* Estilos para el podio */
+/* Header modernizado */
+.header {
+  background-color: $uptc-primary;
+  box-shadow: $box-shadow;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030;
+  
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    
+    .logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      
+      &::before {
+        content: "🏊‍♂️🚴‍♂️🏃‍♂️";
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+      }
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      
+      a {
+        color: rgba(white, 0.85);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 0.5rem 0;
+        position: relative;
+        transition: $transition-base;
+        
+        &:hover {
+          color: white;
+          
+          &::after {
+            width: 100%;
+          }
+        }
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 0;
+          height: 2px;
+          background-color: $uptc-secondary;
+          transition: $transition-base;
+        }
+      }
+    }
+  }
+}
+
+/* Footer modernizado */
+.footer {
+  background-color: $uptc-primary;
+  color: white;
+  padding: 1.5rem 0;
+  text-align: center;
+  margin-top: auto;
+  
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+/* Contenedor principal */
+main {
+  min-height: calc(100vh - 56px - 60px);
+  padding: 2rem 0;
+}
+
+/* Loading spinner mejorado */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  
+  .spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 0.35rem solid rgba($uptc-primary, 0.2);
+    border-top-color: $uptc-primary;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: $uptc-primary;
+    font-weight: 500;
+  }
+}
+
+/* Estilos para el podio mejorado */
 .podio {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  margin: 2rem 0;
+  margin: 3rem 0;
+  gap: 1.5rem;
   
   .puesto {
-    margin: 0 1rem;
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: $box-shadow;
+    background: white;
+    transition: $transition-base;
+    animation: fadeIn 0.5s ease-out forwards;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $box-shadow-lg;
+    }
     
     &.oro {
       order: 2;
+      background: linear-gradient(135deg, #FFD700, #FFC000);
     }
     
     &.plata {
       order: 1;
+      background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
     }
     
     &.bronce {
       order: 3;
+      background: linear-gradient(135deg, #CD7F32, #B06C28);
+    }
+    
+    .medal-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .position {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    
+    .team-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    .points {
+      font-size: 1rem;
+      color: $uptc-accent;
     }
   }
 }
 
-/* Colores para posiciones */
-.gold {
-  background-color: #FFD700 !important;
-}
-
-.silver {
-  background-color: #C0C0C0 !important;
-}
-
-.bronze {
-  background-color: #CD7F32 !important;
-}
-
-/* Loading spinner */
-.loading-spinner {
-  display: inline-block;
-  width: 2rem;
-  height: 2rem;
-  vertical-align: text-bottom;
-  border: 0.25em solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
-  animation: spinner-border .75s linear infinite;
-}
-
-@keyframes spinner-border {
-  to { transform: rotate(360deg); }
-}
-
-/* Estilos para tarjetas de equipos */
+/* Tarjetas de equipos mejoradas */
 .team-card {
-  transition: transform 0.2s;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: $box-shadow-sm;
+  transition: $transition-base;
+  animation: fadeIn 0.5s ease-out forwards;
   
   &:hover {
+    box-shadow: $box-shadow;
     transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    
+    .team-image {
+      transform: scale(1.05);
+    }
+  }
+  
+  .team-image {
+    height: 180px;
+    background-size: cover;
+    background-position: center;
+    transition: $transition-base;
+  }
+  
+  .team-body {
+    padding: 1.5rem;
+    
+    .team-title {
+      color: $uptc-primary;
+      margin-bottom: 0.75rem;
+    }
+    
+    .team-meta {
+      display: flex;
+      justify-content: space-between;
+      color: $uptc-accent;
+      font-size: 0.9rem;
+    }
   }
 }
 
-/* Estilos para la tabla de resultados */
+/* Tabla de resultados mejorada */
 .result-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1.5rem 0;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: $box-shadow-sm;
+  
   th {
+    background-color: $uptc-primary;
+    color: white;
+    padding: 1rem;
+    text-align: left;
     position: sticky;
-    top: 0;
-    background: white;
+    top: 56px;
     z-index: 10;
+    
+    &:first-child {
+      border-top-left-radius: 0.5rem;
+    }
+    
+    &:last-child {
+      border-top-right-radius: 0.5rem;
+    }
   }
   
-  tr.highlight {
-    td {
-      background-color: #f8f9fa;
-      font-weight: bold;
+  td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid $uptc-light;
+    
+    &:first-child {
+      font-weight: 600;
     }
+  }
+  
+  tr:last-child td {
+    border-bottom: none;
+  }
+  
+  tr.highlight td {
+    background-color: rgba($uptc-secondary, 0.1);
+    font-weight: 600;
+  }
+  
+  tr:hover td {
+    background-color: rgba($uptc-primary, 0.05);
+  }
+}
+
+/* Login mejorado */
+.login-container {
+  background: linear-gradient(135deg, $uptc-primary, darken($uptc-primary, 10%));
+  min-height: calc(100vh - 56px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  
+  .card {
+    width: 100%;
+    max-width: 450px;
+    border: none;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: $box-shadow-lg;
+    animation: fadeIn 0.5s ease-out forwards;
+    
+    .card-header {
+      background-color: $uptc-primary;
+      color: white;
+      text-align: center;
+      padding: 1.5rem;
+      border-bottom: 3px solid $uptc-secondary;
+      
+      h2 {
+        margin: 0;
+        font-weight: 700;
+      }
+    }
+    
+    .card-body {
+      padding: 2rem;
+      
+      .form-control {
+        border-radius: 0.375rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid rgba($uptc-accent, 0.3);
+        transition: $transition-base;
+        
+        &:focus {
+          border-color: $uptc-primary;
+          box-shadow: 0 0 0 0.25rem rgba($uptc-primary, 0.25);
+        }
+      }
+      
+      .btn-primary {
+        background-color: $uptc-primary;
+        border: none;
+        padding: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: $transition-base;
+        
+        &:hover {
+          background-color: darken($uptc-primary, 10%);
+          transform: translateY(-2px);
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+      }
+      
+      .alert {
+        border-radius: 0.375rem;
+      }
+    }
+  }
+}
+
+/* Responsive design */
+@include media-breakpoint-down(md) {
+  .header {
+    nav {
+      flex-direction: column;
+      padding: 0.75rem;
+      
+      .nav-links {
+        margin-top: 1rem;
+        gap: 1rem;
+      }
+    }
+  }
+  
+  .podio {
+    flex-direction: column;
+    align-items: center;
+    
+    .puesto {
+      width: 80%;
+      margin-bottom: 1rem;
+      order: 0 !important;
+    }
+  }
+  
+  .result-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .team-card {
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-container .card {
+    margin: 1rem;
+  }
+}
+
+/* Estilos adicionales para todos los componentes */
+
+.container {
+  padding: 0 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2, h3, h4 {
+  color: $uptc-primary;
+}
+
+h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background-color: $uptc-secondary;
+  }
+}
+
+.alert {
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  
+  &-info {
+    background-color: rgba($uptc-primary, 0.1);
+    border-left: 4px solid $uptc-primary;
+    color: $uptc-dark;
+  }
+  
+  &-danger {
+    background-color: rgba($tri-red, 0.1);
+    border-left: 4px solid $tri-red;
+    color: $tri-red;
+  }
+}
+
+/* Animaciones específicas */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos adicionales para admin */
+.admin-page {
+  background-color: $uptc-light;
+  min-height: calc(100vh - 56px);
+}
+
+/* Animaciones para admin */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.admin-card {
+  animation: slideInFromLeft 0.4s ease-out forwards;
+}
+
+/* Efectos de hover para tablas */
+.table-hover-effect {
+  tbody tr {
+    transition: $transition-base;
+    
+    &:hover {
+      transform: translateX(5px);
+      box-shadow: -5px 0 0 $uptc-secondary;
+    }
+  }
+}
+
+/* Badges personalizados */
+.badge-admin {
+  padding: 0.35em 0.65em;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  
+  &-primary {
+    background-color: rgba($uptc-primary, 0.1);
+    color: $uptc-primary;
+    border: 1px solid $uptc-primary;
+  }
+  
+  &-warning {
+    background-color: rgba($uptc-secondary, 0.1);
+    color: darken($uptc-secondary, 30%);
+    border: 1px solid $uptc-secondary;
   }
 }

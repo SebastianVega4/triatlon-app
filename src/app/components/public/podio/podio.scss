@@ -1,0 +1,228 @@
+@use 'bootstrap/scss/bootstrap' as *;
+@use '../../../animations.scss' as *;
+
+// Colores UPTC Colombia
+$uptc-primary: #005883;
+$uptc-secondary: #F0B310;
+$uptc-accent: #6D6E70;
+$uptc-light: #E6E7E8;
+$uptc-dark: #333333;
+
+// Colores adicionales para el triatlón
+$tri-red: #E74C3C;
+$tri-blue: #3498DB;
+$tri-green: #2ECC71;
+
+// Espaciados
+$spacer: 1rem;
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,
+  2: $spacer * 0.5,
+  3: $spacer,
+  4: $spacer * 1.5,
+  5: $spacer * 3,
+);
+
+// Tipografía
+$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-size-base: 1rem;
+$line-height-base: 1.5;
+
+// Breakpoints
+$breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+);
+
+// Sombras
+$box-shadow-sm: 0 0.125rem 0.25rem rgba($uptc-dark, 0.075);
+$box-shadow: 0 0.5rem 1rem rgba($uptc-dark, 0.15);
+$box-shadow-lg: 0 1rem 3rem rgba($uptc-dark, 0.175);
+
+// Transiciones
+$transition-base: all 0.3s ease-in-out;
+$transition-fade: opacity 0.15s linear;
+$transition-collapse: height 0.35s ease;
+
+
+.podio-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 2rem;
+  margin: 3rem 0;
+  min-height: 400px;
+  animation: fadeIn 0.5s ease-out;
+
+  .podio-item {
+    width: 280px;
+    padding: 2rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    box-shadow: $box-shadow;
+    text-align: center;
+    position: relative;
+    transition: $transition-base;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(90deg, rgba(0,0,0,0.1), transparent);
+    }
+
+    .podio-posicion {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      color: $uptc-dark;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: $uptc-accent;
+    }
+
+    &.gold {
+      height: 350px;
+      background: linear-gradient(to bottom, #FFD700, #FFECB3);
+      .podio-posicion {
+        color: #B8860B;
+      }
+    }
+
+    &.silver {
+      height: 300px;
+      background: linear-gradient(to bottom, #C0C0C0, #E0E0E0);
+      .podio-posicion {
+        color: #707070;
+      }
+    }
+
+    &.bronze {
+      height: 250px;
+      background: linear-gradient(to bottom, #CD7F32, #E6B17E);
+      .podio-posicion {
+        color: #8B4513;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .podio-container {
+    flex-direction: column;
+    align-items: center;
+    min-height: auto;
+
+    .podio-item {
+      width: 80%;
+      border-radius: 0.5rem;
+      height: auto !important;
+      margin-bottom: 1rem;
+
+      &.gold { order: 1; }
+      &.silver { order: 2; }
+      &.bronze { order: 3; }
+    }
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .podio-container {
+    .podio-item {
+      width: 100%;
+    }
+  }
+}
+
+// ... (estilos anteriores se mantienen igual)
+
+.otros-equipos-container {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background-color: $uptc-light;
+  border-radius: 0.5rem;
+  box-shadow: $box-shadow-sm;
+
+  h3 {
+    color: $uptc-primary;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+}
+
+.otros-equipos-list {
+  display: grid;
+  gap: 0.75rem;
+
+  .equipo-card {
+    display: grid;
+    grid-template-columns: 50px 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: white;
+    border-radius: 0.25rem;
+    box-shadow: $box-shadow-sm;
+    transition: $transition-base;
+
+    &.penalizado {
+      border-left: 3px solid $tri-red;
+      background-color: rgba($tri-red, 0.05);
+    }
+
+    .posicion {
+      font-weight: 600;
+      color: $uptc-primary;
+      text-align: center;
+    }
+
+    .nombre a {
+      color: $uptc-dark;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    .tiempo {
+      color: $uptc-accent;
+      font-family: monospace;
+    }
+
+    .penalizado-badge {
+      color: $tri-red;
+      font-size: 1.2rem;
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .otros-equipos-list {
+    .equipo-card {
+      grid-template-columns: 40px 1fr auto;
+      
+      .tiempo {
+        grid-column: 2;
+        grid-row: 2;
+        font-size: 0.9rem;
+      }
+
+      .penalizado-badge {
+        grid-column: 3;
+        grid-row: 1;
+      }
+    }
+  }
+}

@@ -2,21 +2,6 @@
   <h2>Gestión de Tiempos</h2>
   
   <div class="row" *ngIf="!loading; else loadingTemplate">
-    <div class="col-md-4">
-      <div class="list-group">
-        <button 
-          *ngFor="let equipo of equipos" 
-          class="list-group-item list-group-item-action"
-          [class.active]="equipoSeleccionado?.id === equipo.id"
-          (click)="seleccionarEquipo(equipo.id)"
-        >
-          {{ equipo.nombre }}
-          <span class="badge bg-primary rounded-pill float-end">
-            {{ equipo.tiempo_total || '--:--:--' }}
-          </span>
-        </button>
-      </div>
-    </div>
     
     <div class="col-md-8" *ngIf="equipoSeleccionado">
       <div class="card">
@@ -97,6 +82,21 @@
             </table>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="list-group">
+        <button 
+          *ngFor="let equipo of equipos" 
+          class="list-group-item list-group-item-action"
+          [class.active]="equipoSeleccionado?.id === equipo.id"
+          (click)="seleccionarEquipo(equipo.id)"
+        >
+          {{ equipo.nombre }}
+          <span class="badge bg-primary rounded-pill float-end">
+            {{ equipo.tiempo_total || '--:--:--' }}
+          </span>
+        </button>
       </div>
     </div>
   </div>

@@ -3,6 +3,12 @@
   
   <app-loading *ngIf="loading"></app-loading>
 
+  <div *ngIf="!resultadosVisibles" class="alert alert-info">
+    Los resultados están ocultos temporalmente. Por favor, espere a la ceremonia de premiación.
+  </div>
+
+  <a routerLink="/podio" class="back-link">← Volver al podio</a>
+
   <div *ngIf="!loading" class="resultados-list">
     <table>
       <thead>
@@ -17,8 +23,14 @@
       <tbody>
         <tr *ngFor="let res of resultados; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ res.nombre }}</td>
-          <td>{{ res.equipo_nombre }}</td>
+          <td>
+            <span *ngIf="resultadosVisibles">{{ res.nombre }}</span>
+            <span *ngIf="!resultadosVisibles">Oculto</span>
+          </td>
+          <td>
+            <span *ngIf="resultadosVisibles">{{ res.equipo_nombre }}</span>
+            <span *ngIf="!resultadosVisibles">Oculto</span>
+          </td>
           <td>{{ res.tiempo }}</td>
           <td>{{ res.genero === 'M' ? 'Masculino' : 'Femenino' }}</td>
         </tr>

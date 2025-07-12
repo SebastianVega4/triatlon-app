@@ -3,26 +3,76 @@
   
   <app-loading *ngIf="loading"></app-loading>
 
-  <div *ngIf="!loading" class="podio-container">
-    <!-- Segundo lugar -->
-    <div *ngIf="podio[1]" class="podio-item silver">
-      <div class="podio-posicion">2°</div>
-      <h3>{{ podio[1].nombre }}</h3>
-      <p>Tiempo: {{ podio[1].tiempo_total }}</p>
+  <div class="disciplinas-links">
+    <a routerLink="/resultados/natacion">
+      <i class="bi bi-star-fill me-1"></i>
+      Natación
+    </a>
+    <a routerLink="/resultados/ciclismo">
+      <i class="bi bi-star-fill me-1"></i>
+      Ciclismo
+    </a>
+    <a routerLink="/resultados/atletismo">
+      <i class="bi bi-star-fill me-1"></i>
+      Atletismo
+    </a>
+  </div>
+
+  <div *ngIf="!resultadosVisibles" class="alert alert-info">
+    Los resultados están ocultos temporalmente. Por favor, espere a la ceremonia de premiación.
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Podio con los 3 primeros lugares -->
+    <div class="podio-container">
+      <!-- Segundo lugar -->
+      <div *ngIf="podio[1]" class="podio-item silver">
+        <div class="podio-posicion">2°</div>
+        <h3>
+          <a *ngIf="resultadosVisibles" [routerLink]="['/equipo', podio[1].id]">{{ podio[1].nombre }}</a>
+          <span *ngIf="!resultadosVisibles">Equipo oculto</span>
+        </h3>
+        <p>Tiempo: {{ podio[1].tiempo_total }}</p>
+        <p *ngIf="podio[1].penalizacion" class="penalizado">⚠️ Penalizado</p>
+      </div>
+
+      <!-- Primer lugar -->
+      <div *ngIf="podio[0]" class="podio-item gold">
+        <div class="podio-posicion">1°</div>
+        <h3>
+          <a *ngIf="resultadosVisibles" [routerLink]="['/equipo', podio[0].id]">{{ podio[0].nombre }}</a>
+          <span *ngIf="!resultadosVisibles">Equipo oculto</span>
+        </h3>
+        <p>Tiempo: {{ podio[0].tiempo_total }}</p>
+        <p *ngIf="podio[0].penalizacion" class="penalizado">⚠️ Penalizado</p>
+      </div>
+
+      <!-- Tercer lugar -->
+      <div *ngIf="podio[2]" class="podio-item bronze">
+        <div class="podio-posicion">3°</div>
+        <h3>
+          <a *ngIf="resultadosVisibles" [routerLink]="['/equipo', podio[2].id]">{{ podio[2].nombre }}</a>
+          <span *ngIf="!resultadosVisibles">Equipo oculto</span>
+        </h3>
+        <p>Tiempo: {{ podio[2].tiempo_total }}</p>
+        <p *ngIf="podio[2].penalizacion" class="penalizado">⚠️ Penalizado</p>
+      </div>
     </div>
 
-    <!-- Primer lugar -->
-    <div *ngIf="podio[0]" class="podio-item gold">
-      <div class="podio-posicion">1°</div>
-      <h3>{{ podio[0].nombre }}</h3>
-      <p>Tiempo: {{ podio[0].tiempo_total }}</p>
-    </div>
-
-    <!-- Tercer lugar -->
-    <div *ngIf="podio[2]" class="podio-item bronze">
-      <div class="podio-posicion">3°</div>
-      <h3>{{ podio[2].nombre }}</h3>
-      <p>Tiempo: {{ podio[2].tiempo_total }}</p>
+    <!-- Lista de otros equipos (4° lugar en adelante) -->
+    <div class="otros-equipos-container">
+      <h3>Otros equipos</h3>
+      <div class="otros-equipos-list">
+        <div *ngFor="let equipo of otrosEquipos" class="equipo-card" [class.penalizado]="equipo.penalizacion">
+          <div class="posicion">{{ equipo.posicion }}°</div>
+          <div class="nombre">
+            <a *ngIf="resultadosVisibles" [routerLink]="['/equipo', equipo.id]">{{ equipo.nombre }}</a>
+            <span *ngIf="!resultadosVisibles">Equipo oculto</span>
+          </div>
+          <div class="tiempo">{{ equipo.tiempo_total }}</div>
+          <div *ngIf="equipo.penalizacion" class="penalizado-badge">⚠️</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
