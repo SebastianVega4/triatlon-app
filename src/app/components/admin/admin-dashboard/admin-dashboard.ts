@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { Loading } from '../../shared/loading/loading';
+import { take } from 'rxjs/operators';
+import { Premio } from '../../../interfaces/premio.interface';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -24,7 +26,7 @@ export class AdminDashboard implements OnInit {
     private resultadosService: ResultadosService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.equiposService.getEquipos().subscribe(equipos => {
@@ -37,13 +39,31 @@ export class AdminDashboard implements OnInit {
     });
   }
 
-  calcularResultados(): void {
-    this.resultadosService.calcularPremios().then(() => {
+  async calcularResultados(): Promise<void> {
+    this.loading = true;
+
+    try {
+      await this.resultadosService.calcularPremios();
       alert('Premios calculados correctamente');
-    }).catch(error => {
-      console.error('Error calculando premios:', error);
-      alert('Error calculando premios');
-    });
+    } catch (error: unknown) {
+      let errorMessage = 'Ocurrió un error al calcular los premios';
+
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+
+      console.error('Error detallado:', error);
+      alert(`Error: ${errorMessage}`);
+
+      // Mostrar más detalles en consola para diagnóstico
+      if (error instanceof Error && error.stack) {
+        console.error('Stack trace:', error.stack);
+      }
+    } finally {
+      this.loading = false;
+    }
   }
 
   toggleVisibilidad(): void {

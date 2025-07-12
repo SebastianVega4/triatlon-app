@@ -41,6 +41,11 @@ export class FirebaseService {
     return q ? q(base) : base;
   }
 
+  getDocData(path: string): Observable<any> {
+    const docRef = doc(this.firestore, path);
+    return docData(docRef);
+  }
+
   getDocRef(path: string) {
     return doc(this.firestore, path);
   }
@@ -82,7 +87,7 @@ export class FirebaseService {
     return collectionData(colRef, { idField: 'id' }) as Observable<Participante[]>;
   }
 
-  async createParticipante(equipoId: string, participante: Omit<Participante, 'id'>): Promise<string> {
+  async addParticipante(equipoId: string, participante: Omit<Participante, 'id'>): Promise<string> {
     const colRef = collection(this.firestore, `equipos/${equipoId}/participantes`);
     const docRef = await addDoc(colRef, {
       ...participante,

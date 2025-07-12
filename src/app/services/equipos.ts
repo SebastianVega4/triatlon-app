@@ -33,7 +33,7 @@ export class EquiposService {
   }
 
   addParticipante(equipoId: string, participante: Omit<Participante, 'id'>): Promise<string> {
-    return this.firebase.createParticipante(equipoId, participante);
+    return this.firebase.addParticipante(equipoId, participante); // Método correcto
   }
 
   updateParticipante(equipoId: string, participanteId: string, data: Partial<Participante>): Promise<void> {
