@@ -3,20 +3,23 @@ import { EquiposService } from '../../../services/equipos';
 import { ResultadosService } from '../../../services/resultados';
 import { CommonModule } from '@angular/common';
 import { Loading } from '../../shared/loading/loading';
+import { FormsModule } from '@angular/forms'; // Añadir este import
 
 @Component({
   selector: 'app-gestion-tiempos',
   standalone: true,
-  imports: [CommonModule, Loading],
+  imports: [CommonModule, Loading, FormsModule], // Añadir FormsModule
   templateUrl: './gestion-tiempos.html',
   styleUrls: ['./gestion-tiempos.scss']
 })
 export class GestionTiempos implements OnInit {
   equipos: any[] = [];
+  equiposFiltrados: any[] = []; // Nueva propiedad para equipos filtrados
   equipoSeleccionado: any = null;
   participantes: any[] = [];
   loading = true;
   tiempoEditando: { [key: string]: boolean } = {};
+  terminoBusqueda: string = ''; // Variable para el término de búsqueda
 
   constructor(
     private equiposService: EquiposService,
@@ -30,8 +33,22 @@ export class GestionTiempos implements OnInit {
   cargarEquipos(): void {
     this.equiposService.getEquipos().subscribe(equipos => {
       this.equipos = equipos;
+      this.equiposFiltrados = [...equipos]; // Inicializar con todos los equipos
       this.loading = false;
     });
+  }
+
+  // Método para filtrar equipos
+  filtrarEquipos(): void {
+    if (!this.terminoBusqueda) {
+      this.equiposFiltrados = [...this.equipos];
+      return;
+    }
+    
+    const termino = this.terminoBusqueda.toLowerCase();
+    this.equiposFiltrados = this.equipos.filter(equipo => 
+      equipo.nombre.toLowerCase().includes(termino)
+    );
   }
 
   seleccionarEquipo(equipoId: string): void {

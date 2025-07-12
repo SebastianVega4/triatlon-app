@@ -250,3 +250,28 @@ h2 {
     }
   }
 }
+// Añadir esto a ambos archivos SCSS (lista-equipos.scss y gestion-tiempos.scss)
+.input-group {
+  margin-bottom: 1.5rem;
+  max-width: 500px;
+
+  .form-control {
+    border-radius: 0.5rem 0 0 0.5rem;
+    border-right: none;
+    &:focus {
+      box-shadow: none;
+      border-color: $uptc-primary;
+    }
+  }
+
+  .input-group-text {
+    background-color: white;
+    border-left: none;
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: $uptc-primary;
+  }
+}
+
+.bi-search::before {
+  content: "\F52A"; // Código del icono de búsqueda de Bootstrap Icons
+}
