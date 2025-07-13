@@ -34,10 +34,10 @@
         <tbody>
           <tr *ngFor="let p of participantesFiltrados">
             <td>{{ p.nombre }}</td>
-            <td>{{ p.equipoNombre || '--' }}</td>
+            <td>{{ p.equipoNombre || ' ' }}</td>
             <td>
               <i class="bi {{ getIconoDisciplina(p.disciplina) }} me-2"></i>
-              {{ p.disciplina | titlecase || '--'}}
+              {{ p.disciplina ? (p.disciplina | titlecase) : '--' }}
             </td>
             <td class="font-monospace">{{ p.tiempo || '--:--:--.---' }}</td>
             <td>
@@ -47,7 +47,7 @@
               </span>
               <span *ngIf="!p.penalizado" class="badge bg-success">
                 <i class="bi bi-check-circle me-1"></i>
-                Normal
+                Activo
               </span>
             </td>
           </tr>

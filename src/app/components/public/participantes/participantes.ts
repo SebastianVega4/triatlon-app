@@ -24,10 +24,16 @@ export class Participantes implements OnInit {
   }
 
   cargarParticipantes(): void {
-    this.participantesService.getParticipantes().subscribe(participantes => {
-      this.participantes = participantes;
-      this.participantesFiltrados = [...participantes];
-      this.loading = false;
+    this.participantesService.getParticipantesConEquipos().subscribe({
+      next: (participantes) => {
+        this.participantes = participantes;
+        this.participantesFiltrados = [...participantes];
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar participantes:', error);
+        this.loading = false;
+      }
     });
   }
 
