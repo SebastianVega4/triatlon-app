@@ -19,7 +19,6 @@ import { Premio } from '../../../interfaces/premio.interface';
 export class AdminDashboard implements OnInit {
   equipos: any[] = [];
   loading = true;
-  resultadosVisibles = false;
 
   constructor(
     private equiposService: EquiposService,
@@ -32,10 +31,6 @@ export class AdminDashboard implements OnInit {
     this.equiposService.getEquipos().subscribe(equipos => {
       this.equipos = equipos;
       this.loading = false;
-    });
-
-    this.resultadosService.getVisibilidadResultados().subscribe(visible => {
-      this.resultadosVisibles = visible;
     });
   }
 
@@ -64,18 +59,6 @@ export class AdminDashboard implements OnInit {
     } finally {
       this.loading = false;
     }
-  }
-
-  toggleVisibilidad(): void {
-    this.resultadosService.toggleVisibilidadResultados(!this.resultadosVisibles)
-      .then(() => {
-        this.resultadosVisibles = !this.resultadosVisibles;
-        alert(`Resultados ${this.resultadosVisibles ? 'visibles' : 'ocultos'}`);
-      })
-      .catch(error => {
-        console.error('Error cambiando visibilidad:', error);
-        alert('Error cambiando visibilidad');
-      });
   }
 
   logout(): void {

@@ -4,11 +4,12 @@ import { ResultadosService } from '../../../services/resultados';
 import { CommonModule } from '@angular/common';
 import { Loading } from '../../shared/loading/loading';
 import { FormsModule } from '@angular/forms'; // Añadir este import
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-gestion-tiempos',
   standalone: true,
-  imports: [CommonModule, Loading, FormsModule], // Añadir FormsModule
+  imports: [CommonModule, Loading, FormsModule, RouterModule], // Añadir FormsModule
   templateUrl: './gestion-tiempos.html',
   styleUrls: ['./gestion-tiempos.scss']
 })
@@ -44,21 +45,57 @@ export class GestionTiempos implements OnInit {
       this.equiposFiltrados = [...this.equipos];
       return;
     }
-    
+
     const termino = this.terminoBusqueda.toLowerCase();
-    this.equiposFiltrados = this.equipos.filter(equipo => 
+    this.equiposFiltrados = this.equipos.filter(equipo =>
       equipo.nombre.toLowerCase().includes(termino)
     );
   }
 
+  cerrarformulario(): void {
+    this.equipoSeleccionado = null;
+    this.participantes = [];
+    return;
+  }
+
   seleccionarEquipo(equipoId: string): void {
+    // Si ya está seleccionado, deseleccionarlo (cerrar formulario)
+    if (this.equipoSeleccionado?.id === equipoId) {
+      this.equipoSeleccionado = null;
+      this.participantes = [];
+      return;
+    }
     this.equipoSeleccionado = this.equipos.find(e => e.id === equipoId);
     this.equiposService.getParticipantes(equipoId).subscribe(participantes => {
-      this.participantes = participantes;
+      // Ordenar participantes por disciplina: natación -> ciclismo -> atletismo
+      this.participantes = participantes.sort((a, b) => {
+        const order = ['natacion', 'ciclismo', 'atletismo'];
+        // Asegurarnos de que las disciplinas no sean null
+        const disciplinaA = a.disciplina || '';
+        const disciplinaB = b.disciplina || '';
+        return order.indexOf(disciplinaA) - order.indexOf(disciplinaB);
+      });
       this.participantes.forEach(p => {
         this.tiempoEditando[p.id] = false;
       });
     });
+  }
+
+  formatTimeInput(event: any, participanteId: string): void {
+    let value = event.target.value.replace(/\D/g, '');
+
+    if (value.length > 2) value = value.substring(0, 2) + ':' + value.substring(2);
+    if (value.length > 5) value = value.substring(0, 5) + ':' + value.substring(5);
+    if (value.length > 8) value = value.substring(0, 8) + '.' + value.substring(8);
+    if (value.length > 12) value = value.substring(0, 12);
+
+    event.target.value = value;
+
+    // Actualizar el valor en el participante
+    const participante = this.participantes.find(p => p.id === participanteId);
+    if (participante) {
+      participante.tiempo = value;
+    }
   }
 
   editarTiempo(participanteId: string): void {
@@ -66,8 +103,22 @@ export class GestionTiempos implements OnInit {
   }
 
   guardarTiempo(participante: any, nuevoTiempo: string): void {
+    // Asegurarse de que el tiempo tenga el formato completo
+    if (!nuevoTiempo.includes(':')) {
+      // Si el usuario solo ingresó números, formatearlo
+      let formattedTime = nuevoTiempo.replace(/\D/g, '');
+      formattedTime = formattedTime.padEnd(6, '0').substring(0, 6);
+      formattedTime = `${formattedTime.substring(0, 2)}:${formattedTime.substring(2, 4)}:${formattedTime.substring(4, 6)}`;
+      nuevoTiempo = formattedTime;
+    }
+
+    // Asegurarse de que tenga milisegundos
+    if (!nuevoTiempo.includes('.')) {
+      nuevoTiempo += '.000';
+    }
+
     if (!this.validarFormatoTiempo(nuevoTiempo)) {
-      alert('Formato de tiempo inválido. Use HH:MM:SS');
+      alert('Formato de tiempo inválido. Use HH:MM:SS.000');
       return;
     }
 
@@ -80,7 +131,7 @@ export class GestionTiempos implements OnInit {
         .then(() => this.resultadosService.actualizarPosiciones())
         .then(() => {
           this.tiempoEditando[participante.id] = false;
-          this.cargarEquipos(); // Refrescar lista de equipos
+          this.cargarEquipos();
         });
     }).catch(error => {
       console.error('Error actualizando tiempo:', error);

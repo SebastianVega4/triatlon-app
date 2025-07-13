@@ -1,16 +1,16 @@
 <div class="container mt-4">
   <h2>Gestión de Tiempos</h2>
-  
+
   <!-- Añadir barra de búsqueda -->
   <div class="mb-4">
     <div class="input-group">
-      <input 
-        type="text" 
-        class="form-control" 
-        placeholder="Buscar equipo por nombre..." 
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar equipo por nombre..."
         [(ngModel)]="terminoBusqueda"
         (input)="filtrarEquipos()"
-      >
+      />
       <span class="input-group-text">
         <i class="bi bi-search"></i>
       </span>
@@ -18,34 +18,163 @@
   </div>
 
   <div class="row" *ngIf="!loading; else loadingTemplate">
-    
     <div class="col-md-8" *ngIf="equipoSeleccionado">
-      <!-- ... (resto del contenido permanece igual) ... -->
-    </div>
-    
-    <div class="col-md-4">
-      <!-- Mostrar mensaje si no hay resultados -->
-      <div *ngIf="equiposFiltrados.length === 0" class="alert alert-warning mb-3">
-        No se encontraron equipos con ese nombre
-      </div>
-      
-      <div class="list-group">
-        <!-- Usar equiposFiltrados en lugar de equipos -->
-        <button 
-          *ngFor="let equipo of equiposFiltrados" 
-          class="list-group-item list-group-item-action"
-          [class.active]="equipoSeleccionado?.id === equipo.id"
-          (click)="seleccionarEquipo(equipo.id)"
+      <div class="card">
+        <div class="card-header">
+          <h3>{{ equipoSeleccionado.nombre }}</h3>
+          <p class="mb-0">
+            Tiempo total: {{ equipoSeleccionado.tiempo_total || '--:--:--' }}
+          </p>
+        </div>
+
+        <div class="card-body">
+          <h4>Participantes</h4>
+
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th class="d-none d-md-table-cell">Género</th>
+                  <th>Disciplina</th>
+                  <th>Tiempo</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let participante of participantes">
+                  <td>{{ participante.nombre }}</td>
+                  <td class="d-none d-md-table-cell">
+                    {{ participante.genero === 'M' ? 'Masculino' : 'Femenino' }}
+                  </td>
+                  <td>{{ participante.disciplina | titlecase }}</td>
+                  <td>
+                    <div
+                      class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-2"
+                    >
+                      <span
+                        *ngIf="!tiempoEditando[participante.id]"
+                        class="time-display"
+                      >
+                        {{ participante.tiempo || '--:--:--' }}
+                      </span>
+
+                      <button
+                        *ngIf="!tiempoEditando[participante.id]"
+                        class="btn btn-sm btn-outline-primary ms-md-2"
+                        (click)="editarTiempo(participante.id)"
+                      >
+                        Editar
+                      </button>
+
+                      <div
+                        *ngIf="tiempoEditando[participante.id]"
+                        class="d-flex flex-column flex-md-row gap-2 w-100"
+                      >
+                        <input
+                          type="text"
+                          class="form-control time-input"
+                          #tiempoInput
+                          [value]="participante.tiempo || '00:00:00'"
+                          placeholder="HHMMSS"
+                          (input)="formatTimeInput($event, participante.id)"
+                          maxlength="12"
+                        />
+                        <div class="d-flex gap-2">
+                          <button
+                            class="btn btn-success btn-sm"
+                            (click)="guardarTiempo(participante, tiempoInput.value)"
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            class="btn btn-outline-secondary btn-sm"
+                            (click)="tiempoEditando[participante.id] = false"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="d-flex flex-column flex-md-row gap-2">
+                      <button
+                        class="btn btn-sm btn-warning"
+                        (click)="aplicarPenalizacion(participante)"
+                        [disabled]="!participante.disciplina"
+                      >
+                        Penalizar
+                      </button>
+                      <button
+                        class="btn btn-sm btn-info mt-2 mt-md-0"
+                        (click)="asignarPremioEspecial(participante)"
+                      >
+                        Premio
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <button
+          class="btn btn-sm btn-outline-success"
+          (click)="seleccionarEquipo(equipoSeleccionado.id); $event.stopPropagation()"
+          title="Editar tiempos"
         >
-          {{ equipo.nombre }}
-          <span class="badge bg-primary rounded-pill float-end">
-            {{ equipo.tiempo_total || '--:--:--' }}
-          </span>
+          <i class="bi bi-stopwatch">Cerrar</i>
         </button>
       </div>
     </div>
+
+    <div class="col-md-4">
+      <!-- Mostrar mensaje si no hay resultados -->
+      <div
+        *ngIf="equiposFiltrados.length === 0"
+        class="alert alert-warning mb-3"
+      >
+        No se encontraron equipos con ese nombre
+      </div>
+
+      <div class="list-group">
+        <div
+          *ngFor="let equipo of equiposFiltrados"
+          class="list-group-item list-group-item-action"
+          [class.active]="equipoSeleccionado?.id === equipo.id"
+        >
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="flex-grow-1" (click)="seleccionarEquipo(equipo.id)">
+              {{ equipo.nombre }}
+            </span>
+            <!-- En la parte del list-group-item, modificar el btn-group para añadir el nuevo botón -->
+            <div class="btn-group">
+              <button
+                class="btn btn-sm btn-outline-primary"
+                [routerLink]="['/admin/editar-equipo', equipo.id]"
+                (click)="$event.stopPropagation()"
+                title="Editar información del equipo"
+              >
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-outline-success"
+                (click)="seleccionarEquipo(equipo.id); $event.stopPropagation()"
+                title="Editar tiempos"
+              >
+                <i class="bi bi-stopwatch"></i>
+              </button>
+            </div>
+          </div>
+          <span class="badge bg-primary rounded-pill float-end">
+            {{ equipo.tiempo_total || '--:--:--' }}
+          </span>
+        </div>
+      </div>
+    </div>
   </div>
-  
+
   <ng-template #loadingTemplate>
     <app-loading></app-loading>
   </ng-template>

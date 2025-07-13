@@ -275,3 +275,86 @@ h2 {
 .bi-search::before {
   content: "\F52A"; // Código del icono de búsqueda de Bootstrap Icons
 }
+
+// Estilos para la gestión de tiempos
+.time-display {
+  font-family: monospace;
+  font-size: 1rem;
+  min-width: 100px;
+  display: inline-block;
+}
+
+.time-input {
+  font-family: monospace;
+  min-width: 150px;
+  
+  @include media-breakpoint-up(md) {
+    min-width: 200px;
+  }
+}
+
+.table {
+  td {
+    vertical-align: middle;
+    
+    @include media-breakpoint-down(md) {
+      padding: 0.75rem;
+    }
+  }
+  
+  .btn {
+    white-space: nowrap;
+    
+    @include media-breakpoint-down(md) {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.8rem;
+    }
+  }
+}
+
+.card-header {
+  @include media-breakpoint-down(md) {
+    padding: 1rem;
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    p {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.card-body {
+  @include media-breakpoint-down(md) {
+    padding: 1rem;
+    
+    h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.list-group-item {
+  .btn-group {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover {
+    .btn-group {
+      opacity: 1;
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .list-group-item {
+    .btn-group {
+      opacity: 1; // Mostrar siempre en móviles
+      margin-top: 0.5rem;
+    }
+  }
+}
