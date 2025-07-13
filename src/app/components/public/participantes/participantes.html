@@ -1,0 +1,66 @@
+<div class="container mt-4">
+  <h2>
+    <i class="bi bi-people-fill me-2"></i>
+    Listado de Participantes
+  </h2>
+
+  <div class="mb-4">
+    <div class="input-group">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar participante por nombre o equipo..."
+        [(ngModel)]="terminoBusqueda"
+        (input)="filtrarParticipantes()"
+      />
+      <span class="input-group-text">
+        <i class="bi bi-search"></i>
+      </span>
+    </div>
+  </div>
+
+  <div *ngIf="!loading; else loadingTemplate">
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Equipo</th>
+            <th>Disciplina</th>
+            <th>Tiempo</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of participantesFiltrados">
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.equipoNombre || '--' }}</td>
+            <td>
+              <i class="bi {{ getIconoDisciplina(p.disciplina) }} me-2"></i>
+              {{ p.disciplina | titlecase || '--'}}
+            </td>
+            <td class="font-monospace">{{ p.tiempo || '--:--:--.---' }}</td>
+            <td>
+              <span *ngIf="p.penalizado" class="badge bg-danger">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Penalizado
+              </span>
+              <span *ngIf="!p.penalizado" class="badge bg-success">
+                <i class="bi bi-check-circle me-1"></i>
+                Normal
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="participantesFiltrados.length === 0" class="alert alert-warning">
+        No se encontraron participantes
+      </div>
+    </div>
+  </div>
+
+  <ng-template #loadingTemplate>
+    <app-loading></app-loading>
+  </ng-template>
+</div>

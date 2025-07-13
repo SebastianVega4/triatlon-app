@@ -15,7 +15,7 @@ import { combineLatest } from 'rxjs';
   templateUrl: './podio.html',
   styleUrls: ['./podio.scss']
 })
-export class PodioComponent implements OnInit {
+export class Podio implements OnInit {
   podio: Equipo[] = [];
   otrosEquipos: Equipo[] = []; // <-- Añade esta línea
   loading = true;

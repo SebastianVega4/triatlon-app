@@ -4,20 +4,24 @@
       <i class="bi bi-trophy-fill me-2"></i>
       Triatlón UPTC
     </a>
-    <div class="nav-links">
-      <a routerLink="/">
+    <div class="nav-links" [class.open]="isMenuOpen">
+      <a routerLink="/" (click)="isMenuOpen = false">
         <i class="bi bi-house-door me-1"></i>
         Inicio
       </a>
-      <a routerLink="/podio">
+      <a routerLink="/participantes" (click)="isMenuOpen = false">
+        <i class="bi bi-people-fill me-1"></i>
+        Participantes
+      </a>
+      <a routerLink="/podio" (click)="isMenuOpen = false">
         <i class="bi bi-award me-1"></i>
         Podio
       </a>
-      <a routerLink="/premios-individuales">
+      <a routerLink="/premios-individuales" (click)="isMenuOpen = false">
         <i class="bi bi-star-fill me-1"></i>
         Premios
       </a>
-      <a routerLink="/admin">
+      <a routerLink="/admin" (click)="isMenuOpen = false">
         <i class="bi bi-shield-lock me-1"></i>
         Admin
       </a>

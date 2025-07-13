@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { ListaEquipos } from './components/public/lista-equipos/lista-equipos';
-import { PodioComponent } from './components/public/podio/podio';
+import { Podio } from './components/public/podio/podio';
 import { EquipoDetalle } from './components/public/equipo-detalle/equipo-detalle';
 import { PremiosIndividuales } from './components/public/premios-individuales/premios-individuales';
 import { ResultadosDisciplina } from './components/public/resultados-disciplina/resultados-disciplina';
@@ -11,11 +11,13 @@ import { GestionTiempos } from './components/admin/gestion-tiempos/gestion-tiemp
 import { VisibilidadResultados } from './components/admin/visibilidad-resultados/visibilidad-resultados';
 import { AdminGuard } from './guards/admin-guard';
 import { Login} from './components/shared/login/login';
+import { Participantes } from './components/public/participantes/participantes';
 
 export const routes: Routes = [
   // Rutas públicas
   { path: '', component: ListaEquipos, title: 'Inicio - Triatlón' },
-  { path: 'podio', component: PodioComponent, title: 'Podio - Triatlón' },
+  { path: 'podio', component: Podio, title: 'Podio - Triatlón' },
+  { path: 'participantes', component: Participantes, title: 'Podio - Participantes' },
   { path: 'equipo/:id', component: EquipoDetalle, title: 'Detalle de Equipo - Triatlón' },
   { path: 'premios-individuales', component: PremiosIndividuales, title: 'Premios Individuales - Triatlón' },
   { path: 'resultados/:disciplina', component: ResultadosDisciplina, title: 'Resultados por Disciplina - Triatlón' },

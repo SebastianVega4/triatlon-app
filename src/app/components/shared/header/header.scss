@@ -81,3 +81,36 @@ $transition-collapse: height 0.35s ease;
     display: block;
   }
 }
+
+// Añadir estas reglas para mejorar el menú móvil
+.nav-links {
+  display: flex;
+  gap: $spacer * 1.5;
+  transition: $transition-base;
+
+  @include media-breakpoint-down(md) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: $uptc-primary;
+    z-index: 1000;
+    padding: 0 $spacer;
+    box-shadow: $box-shadow;
+    
+    a {
+      color: white !important;
+      border-bottom: 1px solid rgba(white, 0.1);
+      width: 100%;
+      
+      &:hover {
+        background-color: rgba(white, 0.1);
+      }
+    }
+  }
+
+  &.open {
+    max-height: 300px;
+    padding: $spacer 0;
+  }
+}

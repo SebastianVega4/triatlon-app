@@ -1,0 +1,43 @@
+@use 'bootstrap/scss/bootstrap' as *;
+
+.table {
+  th {
+    white-space: nowrap;
+  }
+
+  td {
+    vertical-align: middle;
+    
+    .badge {
+      font-size: 0.85rem;
+      padding: 0.35rem 0.65rem;
+    }
+  }
+}
+
+.font-monospace {
+  font-family: monospace;
+}
+
+.input-group {
+  max-width: 500px;
+}
+
+@include media-breakpoint-down(sm) {
+  .table-responsive {
+    border: 0;
+    
+    .table {
+      font-size: 0.85rem;
+      
+      th, td {
+        padding: 0.5rem;
+      }
+      
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+}
