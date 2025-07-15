@@ -81,9 +81,15 @@ body {
       text-decoration: none;
       display: flex;
       align-items: center;
+
+      .logo-icon{
+        width: 100px;
+        height: 50px;
+        margin-right: 0.1rem;
+      }
       
       &::before {
-        content: "🏊‍♂️🚴‍♂️🏃‍♂️";
+        content: "";
         margin-right: 0.5rem;
         font-size: 1.2rem;
       }
