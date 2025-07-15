@@ -1,16 +1,16 @@
-@use 'bootstrap/scss/bootstrap' as *;
-@use '../../../animations.scss' as *;
+@use "bootstrap/scss/bootstrap" as *;
+@use "../../../animations.scss" as *;
 // Colores UPTC Colombia
 $uptc-primary: #005883;
-$uptc-secondary: #F0B310;
-$uptc-accent: #6D6E70;
-$uptc-light: #E6E7E8;
+$uptc-secondary: #f0b310;
+$uptc-accent: #6d6e70;
+$uptc-light: #e6e7e8;
 $uptc-dark: #333333;
 
 // Colores adicionales para el triatlón
-$tri-red: #E74C3C;
-$tri-blue: #3498DB;
-$tri-green: #2ECC71;
+$tri-red: #e74c3c;
+$tri-blue: #3498db;
+$tri-green: #2ecc71;
 
 // Espaciados
 $spacer: 1rem;
@@ -24,7 +24,7 @@ $spacers: (
 );
 
 // Tipografía
-$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-family-base: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 $font-size-base: 1rem;
 $line-height-base: 1.5;
 
@@ -35,7 +35,7 @@ $breakpoints: (
   md: 768px,
   lg: 992px,
   xl: 1200px,
-  xxl: 1400px
+  xxl: 1400px,
 );
 
 // Sombras
@@ -48,33 +48,44 @@ $transition-base: all 0.3s ease-in-out;
 $transition-fade: opacity 0.15s linear;
 $transition-collapse: height 0.35s ease;
 
-.footer-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+.footer {
+  background: linear-gradient(90deg, #000000, $uptc-secondary);
+  color: white;
+  padding: 1.5rem 0;
+  text-align: center;
+  margin-top: auto;
 
-.social-links {
-  display: flex;
-  gap: 1rem;
-  
-  .social-link {
-    color: white;
-    font-size: 1.25rem;
-    transition: $transition-base;
-    
-    &:hover {
-      color: $uptc-secondary;
-      transform: translateY(-2px);
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    p {
+      margin: 0;
+      font-size: 0.9rem;
     }
   }
-}
 
-@include media-breakpoint-down(sm) {
-  .footer-content {
-    flex-direction: column;
-    text-align: center;
+  .social-links {
+    display: flex;
+    gap: 1rem;
+
+    .social-link {
+      color: white;
+      font-size: 1.25rem;
+      transition: $transition-base;
+
+      &:hover {
+        color: $uptc-dark;
+        transform: translateY(-2px);
+      }
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    .footer-content {
+      flex-direction: column;
+      text-align: center;
+    }
   }
 }

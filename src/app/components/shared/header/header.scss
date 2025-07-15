@@ -1,17 +1,17 @@
-@use 'bootstrap/scss/bootstrap' as *;
-@use '../../../animations.scss' as *;
+@use "bootstrap/scss/bootstrap" as *;
+@use "../../../animations.scss" as *;
 
 // Colores UPTC Colombia
 $uptc-primary: #005883;
-$uptc-secondary: #F0B310;
-$uptc-accent: #6D6E70;
-$uptc-light: #E6E7E8;
+$uptc-secondary: #f0b310;
+$uptc-accent: #6d6e70;
+$uptc-light: #e6e7e8;
 $uptc-dark: #333333;
 
 // Colores adicionales para el triatlón
-$tri-red: #E74C3C;
-$tri-blue: #3498DB;
-$tri-green: #2ECC71;
+$tri-red: #e74c3c;
+$tri-blue: #3498db;
+$tri-green: #2ecc71;
 
 // Espaciados
 $spacer: 1rem;
@@ -25,7 +25,7 @@ $spacers: (
 );
 
 // Tipografía
-$font-family-base: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+$font-family-base: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 $font-size-base: 1rem;
 $line-height-base: 1.5;
 
@@ -36,7 +36,7 @@ $breakpoints: (
   md: 768px,
   lg: 992px,
   xl: 1200px,
-  xxl: 1400px
+  xxl: 1400px,
 );
 
 // Sombras
@@ -49,68 +49,110 @@ $transition-base: all 0.3s ease-in-out;
 $transition-fade: opacity 0.15s linear;
 $transition-collapse: height 0.35s ease;
 
-.navbar-toggler {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
+.header {
+  background: linear-gradient(90deg, #000000, $uptc-secondary);
+  box-shadow: $box-shadow;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1030;
 
-@include media-breakpoint-down(md) {
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out;
-    gap: 0 !important;
-    
-    a {
-      padding: 0.75rem 0 !important;
-      text-align: center;
-    }
-    
-    &.open {
-      max-height: 300px;
-    }
-  }
-  
-  .navbar-toggler {
-    display: block;
-  }
-}
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
 
-// Añadir estas reglas para mejorar el menú móvil
-.nav-links {
-  display: flex;
-  gap: $spacer * 1.5;
-  transition: $transition-base;
-
-  @include media-breakpoint-down(md) {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: $uptc-primary;
-    z-index: 1000;
-    padding: 0 $spacer;
-    box-shadow: $box-shadow;
-    
     a {
       color: white !important;
-      border-bottom: 1px solid rgba(white, 0.1);
-      width: 100%;
-      
-      &:hover {
-        background-color: rgba(white, 0.1);
+    }
+
+    .logo {
+      color: white;
+      font-size: 1.5rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+
+      .logo-icon {
+        width: 80px; // Tamaño más adecuado para el logo
+        height: 40px;
+        margin-right: 0.75rem;
+        //filter: brightness(0) invert(1); // Para que el icono sea blanco
       }
     }
-  }
 
-  &.open {
-    max-height: 300px;
-    padding: $spacer 0;
+    .navbar-toggler {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    @include media-breakpoint-down(md) {
+      .nav-links {
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        gap: 0 !important;
+
+        a {
+          padding: 0.6rem 0 !important;
+          text-align: center;
+          color: white !important;
+          border-bottom: 1px solid rgba(rgb(0, 0, 0), 0.1);
+          width: 100%;
+
+          &:hover {
+            background-color: rgba(white, 0.1);
+          }
+        }
+
+        &.open {
+          max-height: 300px;
+        }
+      }
+
+      .navbar-toggler {
+        display: block;
+      }
+    }
+
+    // Añadir estas reglas para mejorar el menú móvil
+    .nav-links {
+      display: flex;
+      gap: $spacer * 1.5;
+      transition: $transition-base;
+
+      @include media-breakpoint-down(md) {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: linear-gradient(90deg, #000000, $uptc-secondary);
+        z-index: 1000;
+        padding: 0 $spacer;
+        box-shadow: $box-shadow;
+
+        a {
+          color: white !important;
+          border-bottom: 1px solid rgba(rgb(0, 0, 0), 0.1);
+          width: 100%;
+
+          &:hover {
+            background-color: rgba(white, 0.1);
+          }
+        }
+      }
+
+      &.open {
+        max-height: 300px;
+        padding: 0 0;
+      }
+    }
   }
 }
